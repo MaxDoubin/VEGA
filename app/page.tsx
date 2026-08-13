@@ -1,103 +1,64 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import HeroScene from "./HeroScene";
-import "./cinematic.css";
+import { useEffect, useMemo, useRef, useState } from "react";
+import DeckScene from "./DeckScene";
+import "./presentation.css";
 
-type Role = "Student" | "Teacher" | "Family" | "Staff";
-const roleCopy: Record<Role, { eyebrow: string; title: string; body: string; prompt: string }> = {
-  Student: { eyebrow: "LEARN WITHOUT LOSING THE LEARNING", title: "A tutor that gives you the next step—not the final answer.", body: "VEGA asks questions, adapts the explanation, starts study mode, and keeps the student’s thinking at the center.", prompt: "Help me understand slope without doing it for me." },
-  Teacher: { eyebrow: "LESS PLANNING FRICTION", title: "From an objective to tomorrow’s lesson.", body: "Build a learning sequence, differentiation, language supports, and an exit ticket inside one protected workspace.", prompt: "Plan a 45-minute lesson with a check for understanding." },
-  Family: { eyebrow: "NO JARGON. NO BARRIER.", title: "School information that feels understandable.", body: "Explain an assignment, translate a notice, find the official portal, and prepare a respectful message for the school.", prompt: "Explain this assignment in clear Spanish and English." },
-  Staff: { eyebrow: "POLICY MADE OPERATIONAL", title: "Controls the district can see and shape.", body: "Define roles, retention, approved sources, safety escalation, evaluation metrics, and the boundaries of a measured pilot.", prompt: "Map this use case to safeguards and pilot evidence." },
-};
+type Mode = "pitch" | "presentation";
+type Speaker = "MAX" | "MILA" | "SABRINA" | "REBEKAH" | "KALEB" | "ALL FIVE";
+type Slide = { speaker:Speaker; eyebrow:string; title:React.ReactNode; short:React.ReactNode; long:React.ReactNode; note:string; source?:{label:string;url:string}; tone?:"ink"|"paper"|"acid"|"photo"|"water"; photo?:string; credit?:string; visual?:"slop"|"truth"|"local"|"water"|"uses"|"guardrails"|"team"|"close" };
 
-const sources = [
-  ["CCSD", "District information", "https://www.ccsd.net/"],
-  ["Canvas", "Courses and assignments", "https://canvas.ccsd.net/"],
-  ["Campus", "Grades and attendance", "https://campusportal.ccsd.net/"],
-  ["SAFE", "Student data privacy", "https://safe.ccsd.net/"],
-  ["StuTech", "Device and account help", "https://stutech.ccsd.net/"],
-  ["Transport", "Routes and eligibility", "https://transportation.ccsd.net/"],
+const slides: Slide[] = [
+  {speaker:"MAX",eyebrow:"01 / THE OPEN",tone:"ink",title:<>The AI decision<br/><em>is already here.</em></>,short:<>Pull out your phone. Scroll for ten seconds.</>,long:<>Two modes. One idea: students should have a voice in the AI infrastructure that will shape their education.</>,note:"Hold five full seconds of silence. Do not fill it. Look up, then advance."},
+  {speaker:"MAX",eyebrow:"02 / THE PROBLEM",tone:"acid",visual:"slop",title:<>SLOP.</>,short:<>Six fingers. The same fake voice. Content made by nobody, for nobody—pushed at you anyway.</>,long:<>Merriam-Webster chose “slop” as its 2025 Word of the Year: low-quality digital content produced in quantity with AI. AI built for attention gives us volume, not value.</>,note:"Land the word first. Then slow down on: “built to farm your attention.”",source:{label:"Merriam-Webster · 2025 Word of the Year",url:"https://www.merriam-webster.com/wordplay/word-of-the-year"}},
+  {speaker:"MILA",eyebrow:"03 / THE REALITY",tone:"photo",title:<>AI is already<br/><em>in the building.</em></>,short:<>The argument about whether students will use AI is over.</>,long:<>Education accounts can already access Gemini with administrator controls. The useful question is no longer “AI or no AI?” It is: what should a school-controlled alternative do differently?</>,note:"Do not attack teachers or the district. Establish that the choice is about architecture and control.",source:{label:"Google · Gemini for Education",url:"https://support.google.com/a/answer/16350447?hl=en"},photo:"https://storage.googleapis.com/cdn.thenevadaindependent.com/2023/05/VonTobelVisit_014-2048x1367.jpg",credit:"Von Tobel Middle School · The Nevada Independent"},
+  {speaker:"MILA",eyebrow:"04 / THE HONEST COMPARISON",tone:"paper",visual:"truth",title:<>This is not a<br/><em>gotcha.</em></>,short:<>Google says school Workspace prompts are not used to train outside-domain models without permission.</>,long:<>That protection matters—and VEGA should not pretend otherwise. The difference we propose is operational ownership: inference on district-controlled hardware, district-set retention, local auditability, and less dependence on a vendor connection.</>,note:"This is the credibility slide. Say: “We checked. Here is what Google actually promises.”",source:{label:"Google Workspace · Generative AI Privacy Hub",url:"https://knowledge.workspace.google.com/admin/generative-ai/generative-ai-in-google-workspace-privacy-hub"}},
+  {speaker:"SABRINA",eyebrow:"05 / THE IDEA",tone:"ink",visual:"local",title:<>Bring the model<br/><em>inside the district.</em></>,short:<>Student → school network → district server → answer.</>,long:<>VEGA is a proposal for AI inference on hardware the district operates. A measured pilot could start with one school, approved sources, no student-record integration, and a clear kill switch.</>,note:"Attach the consequence: our work does not need to leave district-controlled infrastructure to get an answer."},
+  {speaker:"SABRINA",eyebrow:"06 / THE WATER QUESTION",tone:"water",visual:"water",title:<>No evaporative<br/><em>cooling.</em></>,short:<>Specify an air-cooled pilot. No onsite water evaporated to answer a prompt.</>,long:<>Southern Nevada Water Authority reports that its evaporative-cooling moratorium went into effect during fiscal year 2023–24. VEGA’s pilot specification follows that direction: small, air-cooled hardware with measured power and heat.</>,note:"Say “onsite water.” Do not claim the entire technology lifecycle uses literally zero water.",source:{label:"SNWA · April 25, 2024 board materials",url:"https://www.snwa.com/universal/agenda/getfile.cfml?id=4728"},photo:"https://images.unsplash.com/photo-1564855009587-fe17bbb8f093?auto=format&fit=crop&w=2200&q=88",credit:"Lake Mead · Nikola Majksner / Unsplash"},
+  {speaker:"REBEKAH",eyebrow:"07 / WHAT IT DOES",tone:"paper",visual:"uses",title:<>Useful on<br/><em>Monday morning.</em></>,short:<>Explain the math. Start the essay. Find tomorrow’s work. Cite the official source.</>,long:<>Four modes keep the interaction clear: Tutor asks before answering; Plan breaks work into steps; Translate preserves meaning; Navigate routes users to trusted CCSD systems. The prototype already demonstrates all four.</>,note:"Click a prompt to run the mini demo, or open the full prototype if the room allows it."},
+  {speaker:"REBEKAH",eyebrow:"08 / THE RULES",tone:"ink",visual:"guardrails",title:<>Helpful.<br/><em>Not in charge.</em></>,short:<>No automatic grades. No discipline decisions. No pretending uncertainty is fact.</>,long:<>VEGA should block obvious sensitive information, cite official sources, show uncertainty, preserve educator judgment, and escalate safety concerns to qualified people. Every pilot rule should be visible and testable.</>,note:"Prove that local does not automatically mean safe. Safety has to be designed and evaluated.",source:{label:"CCSD · Acceptable Use Policy",url:"https://www.ccsd.net/legal/acceptable-use-policy"}},
+  {speaker:"KALEB",eyebrow:"09 / WHY US",tone:"photo",visual:"team",title:<>The code is<br/><em>the easy part.</em></>,short:<>Design. Writing. Research. Engineering. The courage to get a district to say yes.</>,long:<>A credible school AI takes more than a model: interface design, policy research, technical prototyping, evaluation, training, and communication. That is why this is a five-person project—not a chatbot wrapper.</>,note:"Each person steps forward half a pace as their discipline appears.",photo:"https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2200&q=88",credit:"Student team · Unsplash"},
+  {speaker:"MAX",eyebrow:"10 / THE CHOICE",tone:"ink",visual:"close",title:<>Our AI.<br/>Our servers.<br/><em>Our data.</em></>,short:<>You have four more years in this building. This is the moment to ask whose AI they will be.</>,long:<>Start with one transparent, air-cooled pilot. Test learning value, safety, reliability, cost, and trust. Publish the results. Let students and educators decide what deserves to scale.</>,note:"Max says “VEGA.” Everyone breathes together. Then all five deliver the three beats in unison."},
 ];
 
-function VegaMark({ compact = false }: { compact?: boolean }) { return <span className={compact ? "vega-wordmark compact" : "vega-wordmark"} aria-label="VEGA"><i className="vega-glyph"><b/><b/></i><strong>VEGA</strong></span>; }
+const demoPrompts = [["Explain slope","Start with two points. What changes first: x or y? Let’s calculate one step together."],["Plan my essay","Choose one claim you can defend. Then we’ll build three evidence slots around it."],["What is due?","I’d check Canvas first, then Campus for grades. I’ll link the official CCSD systems."]];
 
-export default function Home() {
-  const [role, setRole] = useState<Role>("Student");
-  const [progress, setProgress] = useState(0);
-  const [menu, setMenu] = useState(false);
+function Mark(){return <span className="deck-mark" aria-label="VEGA"><i><b/><b/></i><strong>VEGA</strong></span>}
 
-  useEffect(() => {
-    const update = () => setProgress(Math.min(100, window.scrollY / Math.max(document.documentElement.scrollHeight - innerHeight, 1) * 100));
-    update(); addEventListener("scroll", update, { passive: true });
-    return () => removeEventListener("scroll", update);
-  }, []);
+function Graphic({type,mode}:{type?:Slide["visual"];mode:Mode}){
+  const [demo,setDemo]=useState(0);
+  if(type==="slop")return <div className="slop-grid" aria-hidden="true"><span>SIX</span><span>Ⅵ</span><span>6?</span><span>404</span><b>CONTENT<br/>WITHOUT<br/>INTENT</b></div>;
+  if(type==="truth")return <div className="truth-card"><span>THE CLAIM</span><p>“Your school prompts train the model.”</p><i>NOT SUPPORTED</i><span>THE STRONGER CASE</span><p>Local infrastructure creates local control.</p><b>VERIFIED</b></div>;
+  if(type==="local")return <div className="local-map"><div><i>01</i><b>STUDENT</b><small>prompt</small></div><span>→</span><div><i>02</i><b>SCHOOL NETWORK</b><small>protected route</small></div><span>→</span><div className="rack-mini"><i>03</i><b>DISTRICT SERVER</b><small>local inference</small><em/><em/><em/></div><span>→</span><div><i>04</i><b>ANSWER</b><small>source attached</small></div></div>;
+  if(type==="water")return <div className="water-stat"><span>ON-SITE EVAPORATIVE WATER</span><strong>0</strong><b>pilot requirement</b><i>fans, not evaporation</i></div>;
+  if(type==="uses")return <div className="mini-demo"><div className="demo-tabs">{demoPrompts.map((p,i)=><button key={p[0]} className={demo===i?"active":""} onClick={()=>setDemo(i)}>{p[0]}</button>)}</div><div className="demo-answer"><Mark/><p>{demoPrompts[demo][1]}</p></div><Link href="/prototype">OPEN FULL PROTOTYPE ↗</Link></div>;
+  if(type==="guardrails")return <div className="guard-grid">{[["01","SOURCE","Show where answers came from"],["02","PRIVACY","Catch sensitive-data patterns"],["03","HUMAN","Keep judgment with educators"],["04","LIMITS","Say when the model is unsure"]].map(x=><div key={x[0]}><i>{x[0]}</i><b>{x[1]}</b><span>{x[2]}</span></div>)}</div>;
+  if(type==="team")return <div className="team-strip">{["MAX","MILA","SABRINA","REBEKAH","KALEB"].map((n,i)=><div key={n}><span>0{i+1}</span><b>{n}</b><i>{["STORY","DESIGN","RESEARCH","TRUST","BUILD"][i]}</i></div>)}</div>;
+  if(type==="close")return <div className="close-orbit" aria-hidden="true"><span/><span/><span/><b>✦</b></div>;
+  return mode==="presentation"?<div className="opening-manifest"><span>2 MIN</span><i>/</i><span>10 MIN</span><b>ONE STORY</b></div>:<div className="opening-manifest"><span>10</span><b>SLIDES · 120 SECONDS</b></div>;
+}
 
-  return <main className="cinematic-site">
-    <div className="v-progress"><i style={{ width: `${progress}%` }} /></div>
-    <HeroScene />
-
-    <nav className="v-nav" aria-label="Primary navigation">
-      <a href="#top" className="v-brand"><VegaMark compact /></a>
-      <div className={menu ? "v-links open" : "v-links"}><a href="#people" onClick={() => setMenu(false)}>For everyone</a><a href="#privacy" onClick={() => setMenu(false)}>Privacy</a><a href="#prototype" onClick={() => setMenu(false)}>Prototype</a><a href="#sources" onClick={() => setMenu(false)}>Sources</a></div>
-      <div className="v-nav-end"><Link href="/prototype">Open VEGA</Link><button onClick={() => setMenu(!menu)} aria-label="Toggle menu">{menu ? "×" : "☰"}</button></div>
-    </nav>
-
-    <section id="top" className="v-screen v-hero">
-      <div className="v-hero-copy">
-        <span className="v-kicker"><i /> A LOCAL AI VISION FOR CCSD</span>
-        <h1>Intelligence.<br /><em>On our terms.</em></h1>
-        <p>A private, district-shaped AI workspace for every student, educator, family, and staff member in Clark County.</p>
-        <div className="v-actions"><Link href="/prototype">Try the working prototype</Link><a href="#privacy">See how it protects people <span>↓</span></a></div>
-      </div>
-      <div className="v-scroll"><span>SCROLL TO EXPLORE</span><i /></div>
-      <div className="v-status"><i /><span><b>LOCAL INTELLIGENCE</b><small>Interactive · move your pointer</small></span></div>
+export default function Home(){
+  const [mode,setMode]=useState<Mode>("pitch"); const [active,setActive]=useState(0); const [notes,setNotes]=useState(false); const [playing,setPlaying]=useState(false); const [remaining,setRemaining]=useState(120); const touchStart=useRef(0);
+  const duration=mode==="pitch"?120:600, slide=slides[active], elapsed=duration-remaining;
+  const timeline=useMemo(()=>Math.max(0,Math.min(100,elapsed/duration*100)),[elapsed,duration]);
+  const go=(next:number)=>setActive(Math.max(0,Math.min(slides.length-1,next)));
+  const switchMode=(next:Mode)=>{setMode(next);setRemaining(next==="pitch"?120:600);setPlaying(false);setActive(0)};
+  useEffect(()=>{if(!playing)return;const id=setInterval(()=>setRemaining(v=>{if(v<=1){setPlaying(false);return 0}const next=v-1,per=duration/slides.length,target=Math.min(slides.length-1,Math.floor((duration-next)/per));setActive(target);return next}),1000);return()=>clearInterval(id)},[playing,duration]);
+  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(["ArrowRight","ArrowDown","PageDown"].includes(e.key))go(active+1);if(["ArrowLeft","ArrowUp","PageUp"].includes(e.key))go(active-1);if(e.key.toLowerCase()==="n")setNotes(v=>!v);if(e.key===" "){e.preventDefault();setPlaying(v=>!v)}if(e.key.toLowerCase()==="f")document.documentElement.requestFullscreen?.()};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[active]);
+  return <main className={`deck mode-${mode} tone-${slide.tone||"ink"}`} onTouchStart={e=>touchStart.current=e.touches[0].clientX} onTouchEnd={e=>{const d=e.changedTouches[0].clientX-touchStart.current;if(Math.abs(d)>55)go(active+(d<0?1:-1))}}>
+    <DeckScene slide={active}/><div className="deck-noise"/>
+    <header className="deck-topbar"><Mark/><div className="mode-switch" aria-label="Presentation length"><button className={mode==="pitch"?"active":""} onClick={()=>switchMode("pitch")}><b>2:00</b><span>PITCH</span></button><button className={mode==="presentation"?"active":""} onClick={()=>switchMode("presentation")}><b>10:00</b><span>PRESENTATION</span></button></div><div className="deck-actions"><Link href="/prototype">TRY VEGA ↗</Link><button onClick={()=>document.documentElement.requestFullscreen?.()} aria-label="Enter fullscreen">⛶</button></div></header>
+    <section key={`${mode}-${active}`} className={`deck-slide slide-${active+1}`}>
+      {slide.photo&&<div className="slide-photo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={slide.photo} alt=""/><i/><small>{slide.credit}</small>
+      </div>}
+      <div className="slide-copy"><div className="slide-meta"><span>{slide.eyebrow}</span><b>{slide.speaker}</b></div><h1>{slide.title}</h1><div className="slide-body">{mode==="pitch"?slide.short:slide.long}</div>{slide.source&&<a className="slide-source" href={slide.source.url} target="_blank" rel="noreferrer">SOURCE · {slide.source.label} ↗</a>}</div>
+      <div className="slide-graphic"><Graphic type={slide.visual} mode={mode}/></div>
+      {notes&&<aside className="speaker-note"><span>SPEAKER NOTE</span><p>{slide.note}</p></aside>}
     </section>
-
-    <section className="v-statement v-screen">
-      <p>AI is already in the classroom.</p>
-      <h2>The real decision is<br /><em>whose rules it follows.</em></h2>
-    </section>
-
-    <section id="people" className="v-screen v-people">
-      <div className="v-section-head"><span>01 / BUILT FOR PEOPLE</span><h2>One system.<br />Four perspectives.</h2></div>
-      <div className="v-role-layout">
-        <div className="v-role-tabs" role="tablist">{(["Student", "Teacher", "Family", "Staff"] as Role[]).map(item => <button key={item} role="tab" aria-selected={role === item} className={role === item ? "active" : ""} onClick={() => setRole(item)}><span>0{(["Student", "Teacher", "Family", "Staff"] as Role[]).indexOf(item) + 1}</span>{item}</button>)}</div>
-        <article key={role} className="v-role-copy"><span>{roleCopy[role].eyebrow}</span><h3>{roleCopy[role].title}</h3><p>{roleCopy[role].body}</p><blockquote>“{roleCopy[role].prompt}”</blockquote><Link href="/prototype">Enter the {role.toLowerCase()} workspace <b>↗</b></Link></article>
-      </div>
-    </section>
-
-    <section className="v-photo v-screen">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/real/students-collaborating.jpg" alt="Students collaborating around laptops" />
-      <div className="v-photo-shade" />
-      <div className="v-photo-copy"><span>DESIGNED AROUND THE ROOM</span><h2>Technology should disappear.<br />Learning should not.</h2><p>VEGA is imagined as infrastructure for the people already doing the work—not another destination competing for their attention.</p></div>
-    </section>
-
-    <section id="privacy" className="v-screen v-privacy">
-      <div className="v-section-head"><span>02 / PRIVATE BY ARCHITECTURE</span><h2>Your data is not<br />the business model.</h2><p>VEGA proposes local inference, district-defined access, and visible source boundaries. The prototype demonstrates the behavior without pretending the district system already exists.</p></div>
-      <div className="v-principles"><article><b>01</b><h3>Local first.</h3><p>Keep model traffic inside infrastructure the district can govern whenever the final deployment makes that possible.</p></article><article><b>02</b><h3>Private by default.</h3><p>Block common sensitive-data patterns, minimize retention, and never build advertising profiles from school conversations.</p></article><article><b>03</b><h3>Human accountable.</h3><p>Show sources, admit uncertainty, preserve teacher judgment, and route serious situations to qualified people.</p></article></div>
-    </section>
-
-    <section id="prototype" className="v-screen v-product">
-      <div className="v-product-copy"><span>03 / THE WORKING PROTOTYPE</span><h2>It does more than<br />look convincing.</h2><p>Four assistant modes. Four audience workspaces. Persistent conversations, search, privacy detection, official citations, feedback, export, dark mode, mobile navigation, and a secure live-model adapter.</p><Link href="/prototype">Launch the full app <b>↗</b></Link></div>
-      <div className="v-device" aria-label="VEGA application preview"><div className="v-device-bar"><i /><i /><i /><span>VEGA / PROTECTED WORKSPACE</span></div><div className="v-device-body"><aside><VegaMark compact /><button>＋ New conversation</button><small>RECENT</small><p>Understanding slope</p><p>Study plan</p><em>● LOCAL DEMO READY</em></aside><div><header><span>Understanding slope</span><b>Student</b></header><nav><i>✦ Tutor</i><i>▤ Plan</i><i>文 Translate</i><i>⌁ Navigate</i></nav><article><span className="response-line"/><div><b>VEGA</b><p>Let’s keep the thinking yours. Choose two points, calculate the change in y, then the change in x in the same order.</p><span>GROUNDED ANSWER · PRIVACY CHECK ON</span></div></article><footer>Message VEGA as student… <b>↑</b></footer></div></div></div>
-    </section>
-
-    <section id="sources" className="v-screen v-sources">
-      <div className="v-section-head"><span>04 / OFFICIAL FIRST</span><h2>Answers should come<br />with a way to check them.</h2></div>
-      <div className="v-source-list">{sources.map((item, i) => <a href={item[2]} target="_blank" rel="noreferrer" key={item[0]}><span>0{i + 1}</span><h3>{item[0]}</h3><p>{item[1]}</p><b>↗</b></a>)}</div>
-    </section>
-
-    <section className="v-screen v-final">
-      <VegaMark />
-      <span>A STUDENT-BUILT CONCEPT</span>
-      <h2>Build the AI<br />we can stand behind.</h2>
-      <p>Start small. Test honestly. Publish the evidence. Let the people who teach and learn shape what comes next.</p>
-      <Link href="/prototype">Open VEGA <b>↗</b></Link>
-      <footer><div className="v-brand"><VegaMark compact /></div><p>Independent concept · Not an official CCSD product or endorsement.</p><a href="#top">Back to top ↑</a></footer>
-    </section>
+    <footer className="deck-controls"><div className="time"><button onClick={()=>setPlaying(v=>!v)} aria-label={playing?"Pause timer":"Start timer"}>{playing?"Ⅱ":"▶"}</button><b>{String(Math.floor(remaining/60)).padStart(2,"0")}:{String(remaining%60).padStart(2,"0")}</b><span>{playing?"LIVE":"READY"}</span></div><div className="slide-dots">{slides.map((_,i)=><button key={i} className={i===active?"active":i<active?"past":""} onClick={()=>go(i)} aria-label={`Go to slide ${i+1}`}><i/></button>)}</div><div className="nav-buttons"><button onClick={()=>setNotes(v=>!v)} className={notes?"active":""}>N · NOTES</button><button onClick={()=>go(active-1)} disabled={active===0}>←</button><b>{String(active+1).padStart(2,"0")} / 10</b><button onClick={()=>go(active+1)} disabled={active===9}>→</button></div><i className="timeline"><span style={{width:`${timeline}%`}}/></i></footer>
   </main>;
 }
