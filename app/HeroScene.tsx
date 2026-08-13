@@ -117,5 +117,5 @@ export default function HeroScene() {
     return () => { stopped = true; dispose(); };
   }, []);
 
-  return <div className={`hero3d ${ready ? "is-ready" : ""}`} ref={host} aria-hidden="true"><span className="hero-fallback"><i/><i/><i/><b>V</b></span></div>;
+  return <div className={`hero3d ${ready ? "is-ready" : ""}`} ref={host} aria-hidden="true"><span className="hero-fallback"><i/><i/><i/><b/><b/><em/></span></div>;
 }
