@@ -79,6 +79,7 @@ function answer(query: string, role: Role, mode: Mode): Omit<Msg, "id" | "who"> 
 }
 
 function Icon({ children }: { children: React.ReactNode }) { return <span className="mode-icon" aria-hidden="true">{children}</span>; }
+function AppWordmark() { return <span className="app-wordmark" aria-label="VEGA"><i><b/><b/></i><strong>VEGA</strong></span>; }
 
 export default function Prototype() {
   const [threads, setThreads] = useState<Thread[]>([starter]);
@@ -194,7 +195,7 @@ export default function Prototype() {
 
   return <main className={`vega-app ${dark ? "theme-dark" : ""}`}>
     <aside className={menu ? "side open" : "side"} aria-label="Conversation history">
-      <Link className="appbrand" href="/"><span>V</span><b>VEGA</b><em>LOCAL LAB</em></Link>
+      <Link className="appbrand" href="/"><AppWordmark /><em>LOCAL LAB</em></Link>
       <button className="newchat" onClick={() => newThread()}>＋ New conversation <kbd>⌘K</kbd></button>
       <div className="thread-search"><span>⌕</span><input aria-label="Search conversations" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations" /></div>
       <label>RECENT · {filteredThreads.length}</label>
@@ -215,13 +216,13 @@ export default function Prototype() {
         <section className="conversation" aria-label="VEGA conversation">
           <div className="roleline"><span>VIEWING AS</span>{(["Student", "Teacher", "Family", "Staff"] as Role[]).map(item => <button className={role === item ? "active" : ""} key={item} onClick={() => selectRole(item)}>{item}</button>)}</div>
           <div className="messages">{thread?.messages.map((m,index) => <article key={`${m.who}-${m.id}-${index}`} className={m.who}>
-            <div className="avatar">{m.who === "vega" ? "V" : "Y"}</div>
+            <div className="avatar">{m.who === "vega" ? <i className="mini-glyph"><b/><b/></i> : "Y"}</div>
             <div className="bubble"><div className="msgmeta"><b>{m.who === "vega" ? "VEGA" : "YOU"}</b>{m.warning && <strong className="warning">⚠ {m.warning}</strong>}</div><p>{m.text}</p>
               {m.sources && <div className="source-row"><span>GROUNDED IN</span>{m.sources.map(s => <a href={s.url} target="_blank" rel="noreferrer" key={s.url}>{s.name} ↗</a>)}</div>}
               {m.who === "vega" && <div className="message-tools"><button onClick={() => copy(m.text)}>▣ Copy</button><span>Was this useful?</span><button className={m.feedback === "up" ? "chosen" : ""} onClick={() => feedback(m.id, "up")} aria-label="Helpful">↑</button><button className={m.feedback === "down" ? "chosen" : ""} onClick={() => feedback(m.id, "down")} aria-label="Not helpful">↓</button></div>}
             </div>
           </article>)}
-          {generating && <article className="vega"><div className="avatar">V</div><div className="bubble thinking"><b>VEGA IS THINKING LOCALLY</b><div><i /><i /><i /></div><button onClick={stop}>Stop</button></div></article>}
+          {generating && <article className="vega"><div className="avatar"><i className="mini-glyph"><b/><b/></i></div><div className="bubble thinking"><b>VEGA IS THINKING LOCALLY</b><div><i /><i /><i /></div><button onClick={stop}>Stop</button></div></article>}
           <div ref={endRef} /></div>
           <div className="dock"><div className="suggestions">{suggestions.map(s => <button key={s} onClick={() => send(undefined, s)} disabled={generating}>{s}<span>↗</span></button>)}</div><form onSubmit={send}><textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Message VEGA as ${role.toLowerCase()}…`} aria-label="Message VEGA" /><div className="composer-meta"><span>⌁ Privacy check on</span><span>{input.length}/2000</span></div><button disabled={!input.trim() || generating} aria-label="Send message">↑</button></form><small><b>Concept prototype.</b> Use fictional information. Verify important answers with cited sources and a qualified adult.</small></div>
         </section>
