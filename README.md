@@ -1,4 +1,4 @@
-# VEGA — CCSD Local AI
+# VEGA - CCSD Local AI
 
 VEGA is a competition-ready concept for private, district-run educational AI, beginning with a proposed South Career and Technical Academy pilot.
 
