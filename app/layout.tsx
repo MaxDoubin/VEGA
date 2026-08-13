@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VEGA — CCSD Local AI",
+  title: "VEGA: CCSD Local AI",
   description: "A student-built vision for private, district-run AI in Clark County classrooms.",
   other: {
     "codex-preview": "development",

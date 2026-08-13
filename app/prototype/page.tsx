@@ -24,7 +24,7 @@ const sources = {
 
 const welcome = (role: Role, mode: Mode): Msg => ({
   id: Date.now(), who: "vega",
-  text: `${role} workspace ready in ${mode} mode. I use a local demonstration engine and fictional data. Choose a starter below or ask your own question—without names, IDs, grades, or other private information.`,
+  text: `${role} workspace ready in ${mode} mode. I use a local demonstration engine and fictional data. Choose a starter below or ask your own question. Do not include names, IDs, grades, or other private information.`,
   sources: [sources.policy, sources.privacy],
 });
 
@@ -68,12 +68,12 @@ function answer(query: string, role: Role, mode: Mode): Omit<Msg, "id" | "who"> 
   if (/privacy|data|safe|policy|ai rule|acceptable/.test(q)) return { text: "CCSD’s published guidance centers educational purpose, protection of personally identifiable information, critical review of AI output, and academic integrity. VEGA’s proposed local design follows those boundaries, but any real pilot would still need district security, legal, accessibility, and instructional review.", sources: [sources.policy, sources.privacy] };
   if (mode === "Translate" || /spanish|translate|bilingual/.test(q)) return { text: "Versión clara en español: Puedo explicar el mensaje escolar paso a paso y conservar el significado original. Antes de pegar texto, quite nombres, números de identificación, calificaciones y cualquier información privada. También puedo mostrar una versión en inglés para comparar.", sources: [sources.home] };
   if (mode === "Plan") {
-    if (role === "Teacher") return { text: "45-minute learning plan\n\n1. Launch · 5 min — one visual question that reveals prior knowledge.\n2. Model · 8 min — teacher think-aloud with one worked example.\n3. Practice · 20 min — pairs solve, explain, and compare strategies.\n4. Check · 7 min — individual hinge question and targeted reteach.\n5. Exit · 5 min — one transfer problem plus confidence rating.\n\nAdd language frames, a worked-example scaffold, and an extension that asks students to justify a second method.", sources: [sources.canvas] };
+    if (role === "Teacher") return { text: "45-minute learning plan\n\n1. Launch · 5 min: one visual question that reveals prior knowledge.\n2. Model · 8 min: teacher think-aloud with one worked example.\n3. Practice · 20 min: pairs solve, explain, and compare strategies.\n4. Check · 7 min: individual hinge question and targeted reteach.\n5. Exit · 5 min: one transfer problem plus confidence rating.\n\nAdd language frames, a worked-example scaffold, and an extension that asks students to justify a second method.", sources: [sources.canvas] };
     return { text: "Here’s a practical plan: define one finish line, split it into three 25-minute blocks, put the hardest block first, and end each block with a one-sentence recap. After block two, take a real break. What deadline and subject should I use to personalize the sequence?" };
   }
-  if (/slope|linear|y\s*=|graph/.test(q)) return { text: "Let’s keep the thinking yours. Slope measures how much y changes for each 1-unit change in x. Choose two points, calculate change in y, calculate change in x in the same order, then divide. Tell me your two points and I’ll check each step—not jump to the answer." };
+  if (/slope|linear|y\s*=|graph/.test(q)) return { text: "Let’s keep the thinking yours. Slope measures how much y changes for each 1-unit change in x. Choose two points, calculate change in y, calculate change in x in the same order, then divide. Tell me your two points and I’ll check each step instead of jumping to the answer." };
   if (/quiz|test me|study/.test(q)) return { text: "Study mode is on. I’ll ask one question at a time, give a hint before revealing anything, and adapt the next question to your answer. First question: explain the topic in one sentence as if you were teaching a sixth grader." };
-  if (/essay|paragraph|thesis|write/.test(q)) return { text: "Start with a claim that directly answers the prompt. Under it, write two evidence bullets and one ‘so what?’ sentence for each. I can challenge your reasoning, suggest structure, and give feedback—but the final voice and wording stay yours." };
+  if (/essay|paragraph|thesis|write/.test(q)) return { text: "Start with a claim that directly answers the prompt. Under it, write two evidence bullets and one ‘so what?’ sentence for each. I can challenge your reasoning, suggest structure, and give feedback. The final voice and wording stay yours." };
   const lead = role === "Teacher" ? "I can turn that into a measurable objective, learning sequence, differentiation, and check for understanding." : role === "Family" ? "I can explain that in plain language and help prepare a respectful school message." : role === "Staff" ? "I can map that request to policy, controls, owners, and pilot evidence." : "I can coach this step by step while keeping the work yours.";
   return { text: `${lead} Tell me the subject, goal, deadline, and what you have already tried. Use fictional details only.` };
 }
@@ -188,7 +188,7 @@ export default function Prototype() {
 
   const activeSources = thread?.messages.flatMap(m => m.sources || []).filter((s, i, all) => all.findIndex(x => x.url === s.url) === i) || [];
   const tourSteps = [
-    ["Choose how VEGA helps", "Tutor, Plan, Translate, and Navigate change the workflow—not just the color."],
+    ["Choose how VEGA helps", "Tutor, Plan, Translate, and Navigate change the workflow, not just the color."],
     ["Your privacy boundary", "The demo runs in this browser, blocks common private-data patterns, and never needs real student information."],
     ["Check the evidence", "Official links appear beside grounded answers so every important claim can be verified."],
   ];
