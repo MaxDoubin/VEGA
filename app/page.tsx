@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import DeckScene from "./DeckScene";
 import "./presentation.css";
 
@@ -58,17 +58,17 @@ function Visual({type}:{type:Visual}){
 export default function Home(){
   const [active,setActive]=useState(0);const [notes,setNotes]=useState(false);const [playing,setPlaying]=useState(false);const [remaining,setRemaining]=useState(duration);const touchStart=useRef(0);const slide=slides[active];const elapsed=duration-remaining;
   const timeline=useMemo(()=>Math.max(0,Math.min(100,elapsed/duration*100)),[elapsed]);
-  const go=(next:number)=>setActive(Math.max(0,Math.min(slides.length-1,next)));
+  const go=useCallback((next:number)=>{const target=Math.max(0,Math.min(slides.length-1,next));if(target===active)return;document.documentElement.dataset.slideDirection=target>active?"forward":"back";const doc=document as Document&{startViewTransition?:(update:()=>void)=>void};if(doc.startViewTransition)doc.startViewTransition(()=>setActive(target));else setActive(target)},[active]);
   useEffect(()=>{if(!playing)return;const id=window.setInterval(()=>setRemaining(value=>{if(value<=1){setPlaying(false);return 0}return value-1}),1000);return()=>window.clearInterval(id)},[playing]);
-  useEffect(()=>{const key=(event:KeyboardEvent)=>{if(["ArrowRight","ArrowDown","PageDown"," "].includes(event.key)){event.preventDefault();go(active+1)}if(["ArrowLeft","ArrowUp","PageUp"].includes(event.key))go(active-1);if(event.key.toLowerCase()==="n")setNotes(value=>!value);if(event.key.toLowerCase()==="f")document.documentElement.requestFullscreen?.();if(event.key.toLowerCase()==="r"){setRemaining(duration);setActive(0);setPlaying(false)}};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[active]);
+  useEffect(()=>{const key=(event:KeyboardEvent)=>{if(["ArrowRight","ArrowDown","PageDown"," "].includes(event.key)){event.preventDefault();go(active+1)}if(["ArrowLeft","ArrowUp","PageUp"].includes(event.key))go(active-1);if(event.key.toLowerCase()==="n")setNotes(value=>!value);if(event.key.toLowerCase()==="f")document.documentElement.requestFullscreen?.();if(event.key.toLowerCase()==="r"){setRemaining(duration);setActive(0);setPlaying(false)}};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[active,go]);
   return <main className={`deck tone-${slide.tone}`} onTouchStart={event=>touchStart.current=event.touches[0].clientX} onTouchEnd={event=>{const distance=event.changedTouches[0].clientX-touchStart.current;if(Math.abs(distance)>55)go(active+(distance<0?1:-1))}}>
     <DeckScene slide={active}/><div className="deck-noise"/>
     <header className="deck-topbar"><VegaMark/><div className="single-mode"><b>5:00</b><span>ONE PRESENTATION</span></div><div className="deck-actions"><Link href="/prototype">TRY VEGA ↗</Link><button onClick={()=>document.documentElement.requestFullscreen?.()} aria-label="Enter fullscreen">⛶</button></div></header>
     <section key={active} className={`deck-slide slide-${active+1}`} onClick={event=>{const target=event.target as HTMLElement;if(!target.closest("a,button,.speaker-note"))go(active+1)}}>
       {slide.photo&&<div className="slide-photo"><img src={slide.photo} alt=""/><i/><small>{slide.credit}</small></div>}
-      <div className="slide-copy"><div className="chapter-label">{slide.chapter}</div><div className="slide-meta"><span>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span><b>{slide.speaker}</b><i>{slide.seconds} SEC</i></div><h1>{slide.title}</h1><div className="slide-body">{slide.body}</div></div>
+      <div className="slide-copy"><div className="chapter-label">{slide.chapter}</div><div className="slide-meta"><span>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span><b>{slide.speaker}</b></div><h1>{slide.title}</h1><div className="slide-body">{slide.body}</div></div>
       <div className="slide-graphic"><Visual type={slide.visual}/></div>
-      {notes&&<aside className="speaker-note"><div><span>{slide.speaker} · {slide.seconds} SEC</span><b>FULL SCRIPT</b></div><p>{slide.script}</p></aside>}
+      {notes&&<aside className="speaker-note"><div><span>{slide.speaker}</span><b>FULL SCRIPT</b></div><p>{slide.script}</p></aside>}
     </section>
     <footer className="deck-controls"><div className="time"><button onClick={()=>setPlaying(value=>!value)} aria-label={playing?"Pause timer":"Start timer"}>{playing?"Ⅱ":"▶"}</button><b>{String(Math.floor(remaining/60)).padStart(2,"0")}:{String(remaining%60).padStart(2,"0")}</b><span>{playing?"LIVE":"READY"}</span></div><div className="slide-dots">{slides.map((item,i)=><button key={item.chapter} className={i===active?"active":i<active?"past":""} onClick={()=>go(i)} aria-label={`Go to slide ${i+1}`}><i/><span>{item.speaker}</span></button>)}</div><div className="nav-buttons"><button onClick={()=>setNotes(value=>!value)} className={notes?"active":""}>N · SCRIPT</button><button onClick={()=>go(active-1)} disabled={active===0}>←</button><b>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</b><button onClick={()=>go(active+1)} disabled={active===slides.length-1}>→</button></div><i className="timeline"><span style={{width:`${timeline}%`}}/></i></footer>
   </main>;
