@@ -1,56 +1,103 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import HeroScene from "./HeroScene";
+import "./cinematic.css";
 
-type Role="Student"|"Teacher"|"Family"|"Staff";
-const roles:Record<Role,{headline:string;sub:string;prompts:string[]}>= {
- Student:{headline:"What are we learning today?",sub:"I’ll help you understand—not do the learning for you.",prompts:["Explain slope without giving me the answer","Help me plan my week","Quiz me on cell biology"]},
- Teacher:{headline:"Turn an idea into tomorrow’s lesson.",sub:"Plan, adapt, and communicate with district-aware assistance.",prompts:["Build a 45-minute lesson on slope","Differentiate this reading","Draft a family update"]},
- Family:{headline:"School information, in your language.",sub:"Clear answers grounded in official CCSD information.",prompts:["Explain this assignment in Spanish","Where can I see grades?","Help me email a teacher"]},
- Staff:{headline:"District knowledge. Local control.",sub:"Explore policy-aware assistance and operational controls.",prompts:["Summarize the AI safeguards","Show today’s system health","Find the approved-app policy"]}
+type Role = "Student" | "Teacher" | "Family" | "Staff";
+const roleCopy: Record<Role, { eyebrow: string; title: string; body: string; prompt: string }> = {
+  Student: { eyebrow: "LEARN WITHOUT LOSING THE LEARNING", title: "A tutor that gives you the next step—not the final answer.", body: "VEGA asks questions, adapts the explanation, starts study mode, and keeps the student’s thinking at the center.", prompt: "Help me understand slope without doing it for me." },
+  Teacher: { eyebrow: "LESS PLANNING FRICTION", title: "From an objective to tomorrow’s lesson.", body: "Build a learning sequence, differentiation, language supports, and an exit ticket inside one protected workspace.", prompt: "Plan a 45-minute lesson with a check for understanding." },
+  Family: { eyebrow: "NO JARGON. NO BARRIER.", title: "School information that feels understandable.", body: "Explain an assignment, translate a notice, find the official portal, and prepare a respectful message for the school.", prompt: "Explain this assignment in clear Spanish and English." },
+  Staff: { eyebrow: "POLICY MADE OPERATIONAL", title: "Controls the district can see and shape.", body: "Define roles, retention, approved sources, safety escalation, evaluation metrics, and the boundaries of a measured pilot.", prompt: "Map this use case to safeguards and pilot evidence." },
 };
-const replies:Record<Role,string>={
- Student:"Let’s work it out together. Slope tells us how much y changes each time x increases by 1. Find two points on your graph. What is the change in y between them?",
- Teacher:"Here’s a lesson frame: 5-minute visual warm-up, 10-minute mini-lesson, 20-minute graph investigation, and a 5-minute exit ticket. I’ve included multilingual supports and an extension.",
- Family:"This asks the student to compare two graphs and explain which changes faster. You can help by asking: ‘What changes each time you move one square right?’ I can translate the directions too.",
- Staff:"Proposed controls include CCSD identity, role-based permissions, encrypted local storage, configurable retention, age-aware filters, citations, audit events, and escalation to a qualified adult."
-};
-const resources=[
- ["CCSD Home","District news, calendars, schools, and services","ccsd.net","https://www.ccsd.net/"],
- ["Canvas","Courses, assignments, modules, and class resources","canvas.ccsd.net","https://canvas.ccsd.net/"],
- ["Infinite Campus","Grades, attendance, schedules, and academic progress","campusportal.ccsd.net","https://campusportal.ccsd.net/"],
- ["Clever","Student launchpad for approved learning apps","clever.ccsd.net","https://clever.ccsd.net/"],
- ["StuTech","Passwords, devices, Google, Canvas, and Office help","stutech.ccsd.net","https://stutech.ccsd.net/"],
- ["SAFE List","CCSD-reviewed technology and student-data privacy","safe.ccsd.net","https://safe.ccsd.net/"],
- ["Canvas Help","Official support for students, employees, and parents","canvashelp.ccsd.net","https://canvashelp.ccsd.net/"],
- ["Transportation","Routes, eligibility, and transportation information","transportation.ccsd.net","https://transportation.ccsd.net/"],
- ["South CTA","School news, programs, calendars, and student links","southcta.ccsd.net","https://southcta.ccsd.net/"]
-];
-const scenes=[
- ["01 · STUDENT","Teach the thinking.","VEGA guides a student through slope with questions, a graph, and a check for understanding—without completing the assignment."],
- ["02 · TEACHER","From standard to lesson.","A teacher gets objectives, a warm-up, differentiation, an exit ticket, and source links in one focused workspace."],
- ["03 · FAMILY","No jargon. No barrier.","A family turns a complicated assignment notice into a clear explanation and a respectful message back to the teacher."],
- ["04 · DISTRICT","The district holds the keys.","Policies, logs, access, retention, and the model stay under district control—with human review where it matters."]
-];
-function Mark({small=false}:{small?:boolean}){return <span className={small?"mark small":"mark"}><i/><b>V</b></span>}
 
-export default function Home(){
- const [role,setRole]=useState<Role>("Student"),[text,setText]=useState(""),[answer,setAnswer]=useState(""),[loading,setLoading]=useState(false),[film,setFilm]=useState(false),[scene,setScene]=useState(0),[filter,setFilter]=useState("");
- useEffect(()=>{if(!film)return;const t=setInterval(()=>setScene(v=>(v+1)%4),5000);return()=>clearInterval(t)},[film]);
- function ask(e?:FormEvent,preset?:string){e?.preventDefault();const q=preset||text;if(!q.trim())return;setText(q);setLoading(true);setAnswer("");setTimeout(()=>{setAnswer(replies[role]);setLoading(false)},850)}
- const shown=resources.filter(x=>x.join(" ").toLowerCase().includes(filter.toLowerCase()));
- return <main><HeroScene/>
-  <nav className="nav shell"><a className="brand" href="#top"><Mark small/><strong>VEGA</strong><em>LOCAL AI</em></a><div className="links"><a href="#experience">Experience</a><a href="#safety">Safety</a><a href="#resources">Resources</a><a href="#plan">Pilot</a></div><div className="nav-actions"><button className="dark-btn" onClick={()=>setFilm(true)}>▶ Watch demo</button><a className="launch-btn" href="/prototype">Launch VEGA ↗</a></div></nav>
-  <section id="top" className="hero shell"><div><div className="eyebrow"><i/>A STUDENT-BUILT VISION FOR CCSD</div><h1>Our AI.<br/><span>Our servers.</span><br/>Our data.</h1><p>VEGA is a proposal for a private, district-run AI workspace—built around the people, policies, and classrooms of Clark County.</p><div className="actions"><a className="primary" href="/prototype">Launch the full prototype →</a><button className="ghost" onClick={()=>setFilm(true)}>▶ 90-second vision</button></div><div className="proof"><b>PROPOSED PRINCIPLES</b><span>● Local inference</span><span>● No ad profile</span><span>● District controls</span></div></div><div className="hero-art"><div className="orbit a"/><div className="orbit b"/><div className="core"><Mark/></div><div className="float f1"><b>⌁</b><span><strong>Runs inside CCSD</strong><small>Proposed local deployment</small></span><em>PRIVATE</em></div><div className="float f2"><b>✓</b><span><strong>Answer grounded</strong><small>3 district sources cited</small></span></div><div className="float f3"><b>▥</b><span><strong>Air-cooled pilot</strong><small>Right-sized local hardware</small></span></div></div></section>
-  <section className="manifest"><div className="shell"><b>THE IDEA</b><p>Almost every student has touched AI. VEGA asks a better question: <strong>what if the district—not an ad company—set the rules?</strong></p></div></section>
-  <section className="vision-gallery shell"><figure><img src="/images/real/students-collaborating.jpg" alt="Students collaborating with laptops"/><figcaption><b>BUILT WITH STUDENTS</b><span>A local AI workspace shaped by the people in the room.</span></figcaption></figure><figure><img src="/images/real/team-laptops.jpg" alt="A team collaborating around laptop computers"/><figcaption><b>BUILT FOR LEARNING</b><span>Guidance that protects the thinking, not just the answer.</span></figcaption></figure></section>
-  <section id="experience" className="section shell"><header><div><b className="kicker">LIVE PROTOTYPE</b><h2>One workspace. Every learner.</h2></div><p>Switch roles, choose a real school task, and see how VEGA changes its help—not its standards.</p></header><div className="app"><aside><div className="app-logo"><Mark small/><b>VEGA</b><em>CONCEPT</em></div><button className="new">＋ New conversation</button><small>WORKSPACE</small>{(["Student","Teacher","Family","Staff"] as Role[]).map(r=><button key={r} className={role===r?"role active":"role"} onClick={()=>{setRole(r);setAnswer("");setText("")}}><span>{r==="Student"?"✦":r==="Teacher"?"▤":r==="Family"?"⌂":"▦"}</span>{r}<i>›</i></button>)}<div className="online"><b>● SYSTEM ONLINE</b><strong>CCSD · SOUTH PILOT</strong><small>Local demo environment</small></div></aside><div className="chat"><div className="chatbar"><span>● Protected workspace</span><b>•••</b></div><div className="chatbody"><Mark/><h3>{roles[role].headline}</h3><p>{roles[role].sub}</p><div className="prompts">{roles[role].prompts.map(p=><button key={p} onClick={()=>ask(undefined,p)}>{p}<span>↗</span></button>)}</div>{(loading||answer)&&<div className="answer"><Mark small/><div>{loading?<span className="typing">● ● ●</span>:<><p>{answer}</p><div className="citations"><b>GROUNDING</b><a target="_blank" href="https://www.ccsd.net/legal/acceptable-use-policy">Acceptable Use ↗</a><a target="_blank" href="https://safe.ccsd.net/">Data Privacy ↗</a></div></>}</div></div>}</div><form onSubmit={ask} className="composer"><input aria-label="Ask VEGA" value={text} onChange={e=>setText(e.target.value)} placeholder={`Ask VEGA as a ${role.toLowerCase()}…`}/><button>↑</button><small><b>VEGA can make mistakes.</b> Check sources and use your judgment. · Responses are simulated.</small></form></div></div></section>
-  <section id="safety" className="section safety"><div className="shell"><header className="light"><div><b className="kicker">TRUST BY DESIGN</b><h2>Safety you can inspect.</h2></div><p>A serious school AI needs more than a filter. VEGA’s proposed controls map to CCSD’s published expectations.</p></header><div className="safety-grid"><article className="shield-card"><div className="shield"><Mark/><span>CCSD<br/>CONTROLLED</span></div><h3>The district owns the box—and the policy.</h3><p>Model, access, retention, and updates can be governed locally. This is a proposed architecture, not a claim about a deployed CCSD system.</p></article><div className="controls">{[["01","Identity & roles","CCSD accounts, least privilege, and separate experiences for students, staff, and families."],["02","Privacy boundaries","Encryption, configurable deletion, no advertising profile, and no training on conversations."],["03","Age-aware safeguards","Academic-integrity coaching, content controls, crisis escalation, and qualified human review."],["04","Grounded answers","District-source allowlists, visible citations, uncertainty language, and answer feedback."]].map((c,i)=><article key={c[0]}><span>{c[0]}</span><div><h3>{c[1]}</h3><p>{c[2]}</p></div><b>{i===3?"DEMOED":"PROPOSED"}</b></article>)}</div></div><div className="policies"><span>PUBLISHED CCSD GUIDANCE</span><a target="_blank" href="https://www.ccsd.net/legal/acceptable-use-policy">Acceptable Use + AI</a><a target="_blank" href="https://safe.ccsd.net/">Student Data Privacy</a><a target="_blank" href="https://safe.ccsd.net/approved-electronic-communication-systems-draft/">Approved Communications</a></div></div></section>
-  <section className="section shell"><div className="infra"><div><b className="kicker">RIGHT-SIZED INFRASTRUCTURE</b><h2>A rack, not a hyperscale campus.</h2><p>VEGA proposes a small pilot sized for school workflows. Air cooling may be feasible for a modest deployment, avoiding on-site evaporative cooling—but hardware, energy, noise, and thermal claims need engineering validation.</p><div className="stats"><span><b>LOCAL</b><small>Inference target</small></span><span><b>AIR</b><small>Cooling concept</small></span><span><b>PILOT</b><small>Start small, measure</small></span></div></div><div className="server"><div className="rack"><i/><i/><i/><i/><b>VEGA // EDGE</b></div><span>→</span><span>→</span><span>→</span></div></div></section>
-  <section id="resources" className="section shell resources"><header><div><b className="kicker">TRUSTED RESOURCE LAYER</b><h2>Start with official sources.</h2></div><label>⌕ <input value={filter} onChange={e=>setFilter(e.target.value)} placeholder="Search official resources"/></label></header><p className="note">Curated entry points verified from CCSD-operated pages. Vendor connections would require district authorization.</p><div className="resource-grid">{shown.map(x=><a target="_blank" href={x[3]} key={x[0]}><i>{x[0][0]}</i><div><h3>{x[0]}</h3><p>{x[1]}</p><small>{x[2]}</small></div><b>↗</b></a>)}</div></section>
-  <section id="plan" className="section plan"><div className="shell"><header className="light"><div><b className="kicker">FROM VISION TO EVIDENCE</b><h2>Prove it at South CTA.</h2></div><p>A safe pilot should earn trust through measured results—not promises.</p></header><div className="timeline">{[["01","LISTEN","30-day design sprint","Students, educators, families, IT, legal, accessibility, and leadership define requirements and red lines."],["02","TEST","Closed sandbox","Use public curriculum samples and synthetic accounts. Run safety, bias, accessibility, and security evaluations."],["03","PILOT","Opt-in classrooms","Limited use cases, clear consent, teacher oversight, short retention, incident response, and an exit plan."],["04","DECIDE","Publish the scorecard","Learning value, reliability, safety events, cost, energy, accessibility, and feedback determine next steps."]].map(x=><article key={x[0]}><span>{x[0]}</span><b>{x[1]}</b><h3>{x[2]}</h3><p>{x[3]}</p></article>)}</div></div></section>
-  <section className="final"><div className="giant"><Mark/></div><div className="shell"><b className="kicker">THE NEXT DECISION IS OURS</b><h2>AI is already in the building.<br/>Let’s decide whose rules it follows.</h2><div className="actions centered"><button className="primary" onClick={()=>setFilm(true)}>Watch the VEGA vision ▶</button><a className="ghost" href="/prototype">Launch full prototype →</a></div><p>VEGA is an independent student concept. It is not an official CCSD product or endorsement.</p></div></section>
-  <footer className="footer shell"><div className="brand"><Mark small/><strong>VEGA</strong><em>LOCAL AI</em></div><p>District-owned AI, imagined by the students who would use it. Photos: algoleague and Redmind Studio / Unsplash.</p><div><a href="/prototype">Full app</a><a href="#safety">Safeguards</a><a target="_blank" href="https://www.ccsd.net/legal/acceptable-use-policy">Research</a><a href="#top">Back to top ↑</a></div></footer>
-  {film&&<div className="modal" role="dialog" aria-modal="true"><button className="close" onClick={()=>setFilm(false)}>×</button><div className="film"><div className="film-top"><div className="brand"><Mark small/><strong>VEGA</strong></div><span>VISION FILM · 01:30</span></div><div className="scene" key={scene}><b>{scenes[scene][0]}</b><h2>{scenes[scene][1]}</h2><p>{scenes[scene][2]}</p></div><div className="film-bottom"><div className="progress"><i style={{width:`${(scene+1)*25}%`}}/></div><div>{scenes.map((_,i)=><button aria-label={`Scene ${i+1}`} className={i===scene?"active":""} key={i} onClick={()=>setScene(i)}/>)}</div><small>Concept demonstration · capabilities shown are simulated</small></div></div></div>}
- </main>
+const sources = [
+  ["CCSD", "District information", "https://www.ccsd.net/"],
+  ["Canvas", "Courses and assignments", "https://canvas.ccsd.net/"],
+  ["Campus", "Grades and attendance", "https://campusportal.ccsd.net/"],
+  ["SAFE", "Student data privacy", "https://safe.ccsd.net/"],
+  ["StuTech", "Device and account help", "https://stutech.ccsd.net/"],
+  ["Transport", "Routes and eligibility", "https://transportation.ccsd.net/"],
+];
+
+function VegaMark() { return <span className="v-mark" aria-hidden="true">V</span>; }
+
+export default function Home() {
+  const [role, setRole] = useState<Role>("Student");
+  const [progress, setProgress] = useState(0);
+  const [menu, setMenu] = useState(false);
+
+  useEffect(() => {
+    const update = () => setProgress(Math.min(100, window.scrollY / Math.max(document.documentElement.scrollHeight - innerHeight, 1) * 100));
+    update(); addEventListener("scroll", update, { passive: true });
+    return () => removeEventListener("scroll", update);
+  }, []);
+
+  return <main className="cinematic-site">
+    <div className="v-progress"><i style={{ width: `${progress}%` }} /></div>
+    <HeroScene />
+
+    <nav className="v-nav" aria-label="Primary navigation">
+      <a href="#top" className="v-brand"><VegaMark /><b>VEGA</b></a>
+      <div className={menu ? "v-links open" : "v-links"}><a href="#people" onClick={() => setMenu(false)}>For everyone</a><a href="#privacy" onClick={() => setMenu(false)}>Privacy</a><a href="#prototype" onClick={() => setMenu(false)}>Prototype</a><a href="#sources" onClick={() => setMenu(false)}>Sources</a></div>
+      <div className="v-nav-end"><Link href="/prototype">Open VEGA</Link><button onClick={() => setMenu(!menu)} aria-label="Toggle menu">{menu ? "×" : "☰"}</button></div>
+    </nav>
+
+    <section id="top" className="v-screen v-hero">
+      <div className="v-hero-copy">
+        <span className="v-kicker"><i /> A LOCAL AI VISION FOR CCSD</span>
+        <h1>Intelligence.<br /><em>On our terms.</em></h1>
+        <p>A private, district-shaped AI workspace for every student, educator, family, and staff member in Clark County.</p>
+        <div className="v-actions"><Link href="/prototype">Try the working prototype</Link><a href="#privacy">See how it protects people <span>↓</span></a></div>
+      </div>
+      <div className="v-scroll"><span>SCROLL TO EXPLORE</span><i /></div>
+      <div className="v-status"><i /><span><b>VEGA CORE</b><small>Interactive · move your pointer</small></span></div>
+    </section>
+
+    <section className="v-statement v-screen">
+      <p>AI is already in the classroom.</p>
+      <h2>The real decision is<br /><em>whose rules it follows.</em></h2>
+    </section>
+
+    <section id="people" className="v-screen v-people">
+      <div className="v-section-head"><span>01 / BUILT FOR PEOPLE</span><h2>One system.<br />Four perspectives.</h2></div>
+      <div className="v-role-layout">
+        <div className="v-role-tabs" role="tablist">{(["Student", "Teacher", "Family", "Staff"] as Role[]).map(item => <button key={item} role="tab" aria-selected={role === item} className={role === item ? "active" : ""} onClick={() => setRole(item)}><span>0{(["Student", "Teacher", "Family", "Staff"] as Role[]).indexOf(item) + 1}</span>{item}</button>)}</div>
+        <article key={role} className="v-role-copy"><span>{roleCopy[role].eyebrow}</span><h3>{roleCopy[role].title}</h3><p>{roleCopy[role].body}</p><blockquote>“{roleCopy[role].prompt}”</blockquote><Link href="/prototype">Enter the {role.toLowerCase()} workspace <b>↗</b></Link></article>
+      </div>
+    </section>
+
+    <section className="v-photo v-screen">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/real/students-collaborating.jpg" alt="Students collaborating around laptops" />
+      <div className="v-photo-shade" />
+      <div className="v-photo-copy"><span>DESIGNED AROUND THE ROOM</span><h2>Technology should disappear.<br />Learning should not.</h2><p>VEGA is imagined as infrastructure for the people already doing the work—not another destination competing for their attention.</p></div>
+    </section>
+
+    <section id="privacy" className="v-screen v-privacy">
+      <div className="v-section-head"><span>02 / PRIVATE BY ARCHITECTURE</span><h2>Your data is not<br />the business model.</h2><p>VEGA proposes local inference, district-defined access, and visible source boundaries. The prototype demonstrates the behavior without pretending the district system already exists.</p></div>
+      <div className="v-principles"><article><b>01</b><h3>Local first.</h3><p>Keep model traffic inside infrastructure the district can govern whenever the final deployment makes that possible.</p></article><article><b>02</b><h3>Private by default.</h3><p>Block common sensitive-data patterns, minimize retention, and never build advertising profiles from school conversations.</p></article><article><b>03</b><h3>Human accountable.</h3><p>Show sources, admit uncertainty, preserve teacher judgment, and route serious situations to qualified people.</p></article></div>
+    </section>
+
+    <section id="prototype" className="v-screen v-product">
+      <div className="v-product-copy"><span>03 / THE WORKING PROTOTYPE</span><h2>It does more than<br />look convincing.</h2><p>Four assistant modes. Four audience workspaces. Persistent conversations, search, privacy detection, official citations, feedback, export, dark mode, mobile navigation, and a secure live-model adapter.</p><Link href="/prototype">Launch the full app <b>↗</b></Link></div>
+      <div className="v-device" aria-label="VEGA application preview"><div className="v-device-bar"><i /><i /><i /><span>VEGA / PROTECTED WORKSPACE</span></div><div className="v-device-body"><aside><VegaMark /><b>VEGA</b><button>＋ New conversation</button><small>RECENT</small><p>Understanding slope</p><p>Study plan</p><em>● LOCAL DEMO READY</em></aside><div><header><span>Understanding slope</span><b>Student</b></header><nav><i>✦ Tutor</i><i>▤ Plan</i><i>文 Translate</i><i>⌁ Navigate</i></nav><article><VegaMark /><div><b>VEGA</b><p>Let’s keep the thinking yours. Choose two points, calculate the change in y, then the change in x in the same order.</p><span>GROUNDED ANSWER · PRIVACY CHECK ON</span></div></article><footer>Message VEGA as student… <b>↑</b></footer></div></div></div>
+    </section>
+
+    <section id="sources" className="v-screen v-sources">
+      <div className="v-section-head"><span>04 / OFFICIAL FIRST</span><h2>Answers should come<br />with a way to check them.</h2></div>
+      <div className="v-source-list">{sources.map((item, i) => <a href={item[2]} target="_blank" rel="noreferrer" key={item[0]}><span>0{i + 1}</span><h3>{item[0]}</h3><p>{item[1]}</p><b>↗</b></a>)}</div>
+    </section>
+
+    <section className="v-screen v-final">
+      <VegaMark />
+      <span>A STUDENT-BUILT CONCEPT</span>
+      <h2>Build the AI<br />we can stand behind.</h2>
+      <p>Start small. Test honestly. Publish the evidence. Let the people who teach and learn shape what comes next.</p>
+      <Link href="/prototype">Open VEGA <b>↗</b></Link>
+      <footer><div className="v-brand"><VegaMark /><b>VEGA</b></div><p>Independent concept · Not an official CCSD product or endorsement.</p><a href="#top">Back to top ↑</a></footer>
+    </section>
+  </main>;
 }

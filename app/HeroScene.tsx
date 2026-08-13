@@ -9,6 +9,8 @@ export default function HeroScene() {
   useEffect(() => {
     const el = host.current;
     if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const probe = document.createElement("canvas");
+    if (!probe.getContext("webgl2") && !probe.getContext("webgl")) return;
     let stopped = false;
     let dispose = () => {};
 
@@ -73,13 +75,13 @@ export default function HeroScene() {
       const mint = new THREE.PointLight(0x5ef2c2, 18, 16); mint.position.set(-3.4, -2.2, 3.2); scene.add(mint);
       const coral = new THREE.PointLight(0xff6c61, 10, 14); coral.position.set(3, -3, 1); scene.add(coral);
 
-      let pointerX = 0, pointerY = 0, scrollY = 0, frame = 0;
+      let pointerX = 0, pointerY = 0, scrollProgress = 0, frame = 0;
       const onPointer = (event: PointerEvent) => {
         const bounds = el.getBoundingClientRect();
         pointerX = (event.clientX - bounds.left) / bounds.width - 0.5;
         pointerY = (event.clientY - bounds.top) / bounds.height - 0.5;
       };
-      const onScroll = () => { scrollY = Math.min(window.scrollY / Math.max(innerHeight, 1), 1.5); };
+      const onScroll = () => { scrollProgress = Math.min(1, window.scrollY / Math.max(document.documentElement.scrollHeight - innerHeight, 1)); };
       el.addEventListener("pointermove", onPointer);
       window.addEventListener("scroll", onScroll, { passive: true });
       const observer = new ResizeObserver(() => {
@@ -90,14 +92,19 @@ export default function HeroScene() {
       const clock = new THREE.Clock();
       const tick = () => {
         const time = clock.getElapsedTime();
-        universe.rotation.y += (pointerX * 0.52 + scrollY * 0.32 - universe.rotation.y) * 0.035;
-        universe.rotation.x += (-pointerY * 0.3 + scrollY * 0.16 - universe.rotation.x) * 0.035;
-        universe.position.y = Math.sin(time * 0.72) * 0.08 - scrollY * 0.38;
+        const journey = scrollProgress * Math.PI * 5;
+        universe.rotation.y += (pointerX * 0.52 + journey * 0.34 - universe.rotation.y) * 0.035;
+        universe.rotation.x += (-pointerY * 0.3 + Math.sin(journey) * 0.24 - universe.rotation.x) * 0.035;
+        universe.position.x = Math.sin(journey * 0.62) * 1.3;
+        universe.position.y = Math.sin(time * 0.72) * 0.08 + Math.cos(journey * 0.8) * 0.65;
+        const scale = 1 + Math.sin(journey * 0.5) * 0.16;
+        universe.scale.setScalar(scale);
         core.rotation.set(time * 0.16, time * 0.23, time * 0.07);
         inner.rotation.set(-time * 0.2, time * 0.15, -time * 0.12);
         wire.rotation.set(-time * 0.11, -time * 0.08, time * 0.09);
         orbital.rotation.set(time * 0.025, -time * 0.035, -time * 0.08);
-        particles.rotation.y = time * 0.012 + scrollY * 0.14;
+        particles.rotation.y = time * 0.012 + journey * 0.17;
+        particles.rotation.x = Math.sin(journey * 0.35) * 0.18;
         renderer.render(scene, camera); frame = requestAnimationFrame(tick);
       };
       tick(); setReady(true);
@@ -110,5 +117,5 @@ export default function HeroScene() {
     return () => { stopped = true; dispose(); };
   }, []);
 
-  return <div className={`hero3d ${ready ? "is-ready" : ""}`} ref={host} aria-hidden="true" />;
+  return <div className={`hero3d ${ready ? "is-ready" : ""}`} ref={host} aria-hidden="true"><span className="hero-fallback"><i/><i/><i/><b>V</b></span></div>;
 }
