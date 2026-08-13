@@ -22,7 +22,7 @@ const sources = [
   ["Transport", "Routes and eligibility", "https://transportation.ccsd.net/"],
 ];
 
-function VegaMark() { return <span className="v-mark" aria-hidden="true">V</span>; }
+function VegaMark({ compact = false }: { compact?: boolean }) { return <span className={compact ? "vega-wordmark compact" : "vega-wordmark"} aria-label="VEGA"><i className="vega-glyph"><b/><b/></i><strong>VEGA</strong></span>; }
 
 export default function Home() {
   const [role, setRole] = useState<Role>("Student");
@@ -40,7 +40,7 @@ export default function Home() {
     <HeroScene />
 
     <nav className="v-nav" aria-label="Primary navigation">
-      <a href="#top" className="v-brand"><VegaMark /><b>VEGA</b></a>
+      <a href="#top" className="v-brand"><VegaMark compact /></a>
       <div className={menu ? "v-links open" : "v-links"}><a href="#people" onClick={() => setMenu(false)}>For everyone</a><a href="#privacy" onClick={() => setMenu(false)}>Privacy</a><a href="#prototype" onClick={() => setMenu(false)}>Prototype</a><a href="#sources" onClick={() => setMenu(false)}>Sources</a></div>
       <div className="v-nav-end"><Link href="/prototype">Open VEGA</Link><button onClick={() => setMenu(!menu)} aria-label="Toggle menu">{menu ? "×" : "☰"}</button></div>
     </nav>
@@ -53,7 +53,7 @@ export default function Home() {
         <div className="v-actions"><Link href="/prototype">Try the working prototype</Link><a href="#privacy">See how it protects people <span>↓</span></a></div>
       </div>
       <div className="v-scroll"><span>SCROLL TO EXPLORE</span><i /></div>
-      <div className="v-status"><i /><span><b>VEGA CORE</b><small>Interactive · move your pointer</small></span></div>
+      <div className="v-status"><i /><span><b>LOCAL INTELLIGENCE</b><small>Interactive · move your pointer</small></span></div>
     </section>
 
     <section className="v-statement v-screen">
@@ -83,7 +83,7 @@ export default function Home() {
 
     <section id="prototype" className="v-screen v-product">
       <div className="v-product-copy"><span>03 / THE WORKING PROTOTYPE</span><h2>It does more than<br />look convincing.</h2><p>Four assistant modes. Four audience workspaces. Persistent conversations, search, privacy detection, official citations, feedback, export, dark mode, mobile navigation, and a secure live-model adapter.</p><Link href="/prototype">Launch the full app <b>↗</b></Link></div>
-      <div className="v-device" aria-label="VEGA application preview"><div className="v-device-bar"><i /><i /><i /><span>VEGA / PROTECTED WORKSPACE</span></div><div className="v-device-body"><aside><VegaMark /><b>VEGA</b><button>＋ New conversation</button><small>RECENT</small><p>Understanding slope</p><p>Study plan</p><em>● LOCAL DEMO READY</em></aside><div><header><span>Understanding slope</span><b>Student</b></header><nav><i>✦ Tutor</i><i>▤ Plan</i><i>文 Translate</i><i>⌁ Navigate</i></nav><article><VegaMark /><div><b>VEGA</b><p>Let’s keep the thinking yours. Choose two points, calculate the change in y, then the change in x in the same order.</p><span>GROUNDED ANSWER · PRIVACY CHECK ON</span></div></article><footer>Message VEGA as student… <b>↑</b></footer></div></div></div>
+      <div className="v-device" aria-label="VEGA application preview"><div className="v-device-bar"><i /><i /><i /><span>VEGA / PROTECTED WORKSPACE</span></div><div className="v-device-body"><aside><VegaMark compact /><button>＋ New conversation</button><small>RECENT</small><p>Understanding slope</p><p>Study plan</p><em>● LOCAL DEMO READY</em></aside><div><header><span>Understanding slope</span><b>Student</b></header><nav><i>✦ Tutor</i><i>▤ Plan</i><i>文 Translate</i><i>⌁ Navigate</i></nav><article><span className="response-line"/><div><b>VEGA</b><p>Let’s keep the thinking yours. Choose two points, calculate the change in y, then the change in x in the same order.</p><span>GROUNDED ANSWER · PRIVACY CHECK ON</span></div></article><footer>Message VEGA as student… <b>↑</b></footer></div></div></div>
     </section>
 
     <section id="sources" className="v-screen v-sources">
@@ -97,7 +97,7 @@ export default function Home() {
       <h2>Build the AI<br />we can stand behind.</h2>
       <p>Start small. Test honestly. Publish the evidence. Let the people who teach and learn shape what comes next.</p>
       <Link href="/prototype">Open VEGA <b>↗</b></Link>
-      <footer><div className="v-brand"><VegaMark /><b>VEGA</b></div><p>Independent concept · Not an official CCSD product or endorsement.</p><a href="#top">Back to top ↑</a></footer>
+      <footer><div className="v-brand"><VegaMark compact /></div><p>Independent concept · Not an official CCSD product or endorsement.</p><a href="#top">Back to top ↑</a></footer>
     </section>
   </main>;
 }
