@@ -11,8 +11,10 @@ const QR_MARGIN_PX = 40;
 const QR_GRID = 41;
 const QR_SUPER = 2;
 const QR_WORLD_SIZE = 5;
-const QR_CX = 3.3;
-const V_CX = -3.3;
+// Shifted well clear of the left-side title/quote text column -- the V used
+// to sit centered-left and cross right through the copy.
+const QR_CX = 6.77;
+const V_CX = 0.17;
 
 function glowTexture(THREE: typeof import("three")) {
   const size = 64;
