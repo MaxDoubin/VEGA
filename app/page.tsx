@@ -37,31 +37,31 @@ const slides: Slide[] = [
   {
     speaker:"KALEB", chapter:"BUILT FOR LAS VEGAS", title:<>Our servers run<br/><em>on air, not water.</em></>,
     body:<><p>A smaller local system designed for one district, not a hyperscale facility built for the world.</p><strong>Water is not unlimited here. Our hardware choice should reflect that.</strong><span className="honesty">AIR-COOLED · NO ONSITE EVAPORATIVE WATER USE</span></>,
-    script:"We live in a desert, so when we hear that AI can consume water for cooling, we should be concerned. These images show how dramatically Lake Mead has changed. Water is not an unlimited resource here. That is why our proposal uses smaller, air-cooled servers located within the district. Fans remove heat from the equipment, so the system would not consume water through evaporative cooling at the site. VEGA will still require electricity. We are not pretending technology has no environmental cost. The difference is scale. VEGA would not be a massive data center serving the entire world. It would be a focused system sized for one school district. We designed the infrastructure around the place where it would actually operate. Now Rebekah will show what that infrastructure could make possible.",
+    script:"We live in a desert, so when we hear that AI can consume water for cooling, we should be concerned. (Advance to the Lake Mead comparison.) These images show how dramatically Lake Mead has changed. Water is not an unlimited resource here. That is why our proposal uses smaller, air-cooled servers located within the district. Fans remove heat from the equipment, so the system would not consume water through evaporative cooling at the site. VEGA will still require electricity. We are not pretending technology has no environmental cost. But, here's the catch: the difference is scale. VEGA would not be a massive data center serving the entire world. It would be a focused system sized for one school district. We designed the infrastructure around the place where it would actually operate. Now Rebekah will show what that infrastructure could make possible.",
     seconds:40, visual:"environment", tone:"water", photo:"/desert-mesa.jpg", credit:"Nevada desert · Unsplash"
   },
   {
     speaker:"REBEKAH", chapter:"CONNECTING CCSD", title:<>One resource,<br/><em>shared across every school.</em></>,
     body:<><p>Approved lessons, activities, and sources available across CCSD.</p><strong>Teachers keep their judgment. VEGA gives every school a trusted starting point.</strong><span className="evidence-line">ONE TRUSTED RESOURCE LAYER · EVERY SCHOOL · EVERY DEVICE</span></>,
-    script:"CCSD has hundreds of schools and thousands of educators, but teachers often have to solve the same problems separately. One teacher creates a lesson from scratch while another teacher across the district may have already created exactly what they need. VEGA could provide a district-controlled space where educators find approved resources, adapt them for their students, and share their own work. It would not tell every teacher to teach in exactly the same way. It would give them a better starting point. That saves time, encourages collaboration, and gives students at different schools access to more consistent support. A shared system also lets CCSD establish shared protections. Mila will explain why that matters.",
+    script:"CCSD has hundreds of schools and thousands of educators, but teachers often have to solve the same problems separately. One teacher creates a lesson from scratch while another teacher across the district may have already created exactly what they need. VEGA could provide a district-controlled space where educators find approved resources, adapt them for their students, and share their own work. (Follow the connections on the district animation.) It would not tell every teacher to teach in exactly the same way. It would give them a better starting point. That saves time, encourages collaboration, and gives students at different schools access to more consistent support. A shared system also lets CCSD establish shared protections. Mila will explain why that matters.",
     seconds:40, visual:"district", tone:"ink", photo:"/network-panel.jpg", credit:"District network infrastructure · Unsplash"
   },
   {
     speaker:"MILA", chapter:"PRIVACY YOU CAN SEE", title:<>Your question<br/><em>never leaves the district.</em></>,
     body:<><strong>DISTRICT-CONTROLLED INFRASTRUCTURE</strong><strong>NOT COMMERCIAL TRAINING DATA</strong><strong>SOURCES SHOWN BESIDE ANSWERS</strong><p>Important answers remain visible, sourced, and checkable.</p><span className="evidence-line">VISIBLE PRIVACY CHECK · VISIBLE SOURCES · VISIBLE LIMITS</span></>,
-    script:"When you enter information into an online AI platform, your request may leave the district and travel through systems controlled by an outside company. With VEGA, the goal is different. The request travels to district-controlled infrastructure and stops there. Student conversations would not be sold to advertisers or used to train a commercial model. CCSD would control access and establish protections designed for its own students. We also designed the prototype to show sources beside its answers. VEGA could still make mistakes. Every AI can. The difference is that students and teachers can see where an answer came from and check it for themselves. We are not asking anyone to blindly trust AI. We are designing AI that can be questioned.",
+    script:"When you enter information into an online AI platform, your request may leave the district and travel through systems controlled by an outside company. With VEGA, the goal is different. (Follow the privacy animation from the student to the district server.) The request travels to district-controlled infrastructure and stops there. Student conversations would not be sold to advertisers or used to train a commercial model. CCSD would control access and establish protections designed for its own students. We also designed the prototype to show sources beside its answers. (Point to the source panel.) VEGA could still make mistakes. Every AI can. The difference is that students and teachers can see where an answer came from and check it for themselves. We are not asking anyone to blindly trust AI. We are designing AI that can be questioned.",
     seconds:40, visual:"privacy", tone:"photo", photo:"/circuit-board.jpg", credit:"Local processing hardware · Unsplash"
   },
   {
     speaker:"MAX", chapter:"OUR DRIVING QUESTION", title:<>We each brought<br/><em>something different.</em></>,
-    body:<><span className="driving-question">How can our team use our individual strengths and experiences to create future opportunities?</span><strong className="direct-answer">This project is our answer. None of us could have built it alone.</strong></>,
-    script:"Our driving question was: how can our team use our individual strengths and experiences to create future opportunities? This project is our answer. Mila used her programming experience to help give the idea structure. Rebekah researched how VEGA could responsibly support students and teachers. Sabrina turned our research into a message people could understand. Kaleb created the visual identity and helped make VEGA stand out. I used my experience with machine learning and web design to combine those ideas into the prototype you see today. None of us could have built this alone. Our strengths were different, but that was not a weakness. That was the reason the project worked. Together, we turned five individual experiences into one opportunity that none of us could have created separately.",
+    body:<><span className="driving-question">How can our team use our individual strengths and experiences to create future opportunities?</span><strong className="direct-answer">Together, we turned five individual experiences into one opportunity none of us could have created separately.</strong></>,
+    script:"Our driving question was: how can our team use our individual strengths and experiences to create future opportunities? This project is our answer. (Reveal each team member.) Mila used her programming experience to help give the idea structure. Rebekah researched how VEGA could responsibly support students and teachers. Sabrina turned our research into a message people could understand. Kaleb created the visual identity and helped make VEGA stand out. I used my experience with machine learning and web design to combine all those ideas into the functional prototype you see today. Our strengths were different, but that was not a weakness. That was the reason the project worked. Together, we turned five individual experiences into one opportunity that none of us could have created separately.",
     seconds:40, visual:"team", tone:"photo", photo:"/students-classroom.jpg", credit:"Valley High School · The Nevada Independent"
   },
   {
-    speaker:"MAX", chapter:"OUR FUTURE", title:<>We choose<br/><em>to build.</em></>,
-    body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong><p className="questions-line">We're happy to answer your questions.</p></>,
-    script:"VEGA is a prototype. It is not finished, and it is not currently an official CCSD system. But it proves something important. Students do not have to wait for somebody else to decide what the future of education should look like. We can help design it. The next step would be a small pilot using district-controlled hardware, trusted educational sources, and feedback from actual students and teachers. Then we measure it. Is it useful? Is it safe? Does it save teachers time? Does it help students learn? If the answer is no, we improve it. If the answer is yes, we have created something that could reach far beyond the five people standing here. AI is already entering our schools. The real question is whether we simply accept whatever arrives, or help build something that answers to our community. We choose to build. This is VEGA. Our AI. Our schools. Our future. Thank you. We are ready for your questions.",
+    speaker:"MAX", chapter:"OUR FUTURE", title:<>Built for our schools.<br/><em>Built by us.</em></>,
+    body:<><p>Test VEGA with real students and teachers, on district-controlled hardware, with clear protections for student data.</p><strong>DOES IT HELP STUDENTS LEARN?</strong><strong>DOES IT SAVE TEACHERS TIME?</strong><strong>CAN OUR COMMUNITY TRUST IT?</strong><p className="questions-line">We're happy to answer your questions.</p></>,
+    script:"VEGA is only a prototype. But the idea behind it is much bigger. AI is already in our schools. The question is not whether students will use it. The question is who it is built for, who controls it, and what we want it to do. We believe the next step is to test VEGA with real students and teachers, on district-controlled hardware, with trusted educational sources, and with clear protections for student data. Then we ask the questions that actually matter: does it help students learn? Does it save teachers time? Can our community trust it? Because the future of education should not just happen to us. We should have a role in building it. Five students started with one question and five different strengths. We ended with something none of us could have built alone. This is VEGA. Built for our schools. Built for our community. Built by students who believe we should help shape what comes next. Feel free to scan our QR code to test our demo, and we are happy to answer any questions. Thank you.",
     seconds:40, visual:"close", tone:"photo", photo:"/vegas-skyline.jpg", video:"/vegas-loop.mp4", credit:"Las Vegas Strip"
   },
 ];
@@ -87,12 +87,20 @@ function TeamShowcase(){
   </div>
 }
 
+function useStepCycle(count:number,pace:number){
+  const [step,setStep]=useState(0);
+  useEffect(()=>{const id=window.setInterval(()=>setStep(value=>(value+1)%count),pace);return()=>window.clearInterval(id)},[count,pace]);
+  return step;
+}
+
 function DistrictDemo(){
   const steps=["A teacher searches the shared library","VEGA finds an approved CCSD resource","The teacher adapts it for this class","The improved activity returns to the district"];
+  const flowLabels=["FIND","ADAPT","SHARE"];
+  const flowStep=useStepCycle(flowLabels.length,1500);
   return <div className="visual-stack">
     <div className="evidence-row">
       <figure className="evidence-photo"><img src="/team-classroom.jpg" alt="CCSD students working on laptops together in a classroom"/><figcaption>CCSD classroom · The Nevada Independent</figcaption></figure>
-      <div className="district-demo"><header><AppGlyph/><b>VEGA RESOURCE EXCHANGE</b><span>CCSD NETWORK</span></header><div className="district-search"><span>⌕</span><p>slope exit ticket for Algebra I</p><i>SEARCH</i></div><div className="district-result"><small>APPROVED RESOURCE</small><b>Graphing Linear Relationships</b><p>Exit ticket · 5 questions · Accessible format</p><div><span>South CTA</span><span>CCSD REVIEWED</span></div></div><div className="district-flow"><span>FIND</span><i>→</i><span>ADAPT</span><i>→</i><span>SHARE</span></div><footer><b>327 SCHOOLS</b><span>ONE TRUSTED STARTING POINT</span></footer></div>
+      <div className="district-demo"><header><AppGlyph/><b>VEGA RESOURCE EXCHANGE</b><span>CCSD NETWORK</span></header><div className="district-search"><span>⌕</span><p>slope exit ticket for Algebra I</p><i>SEARCH</i></div><div className="district-result"><small>APPROVED RESOURCE</small><b>Graphing Linear Relationships</b><p>Exit ticket · 5 questions · Accessible format</p><div><span>South CTA</span><span>CCSD REVIEWED</span></div></div><div className="district-flow">{flowLabels.flatMap((label,i)=>[i>0&&<i key={`arrow${i}`} className={i-1===flowStep?"pulse":i-1<flowStep?"done":""}>→</i>,<span key={label} className={i===flowStep?"active":i<flowStep?"done":""}>{label}</span>])}</div><footer><b>327 SCHOOLS</b><span>ONE TRUSTED STARTING POINT</span></footer></div>
     </div>
     <TimedCaption steps={steps} pace={2100}/>
   </div>
@@ -100,10 +108,11 @@ function DistrictDemo(){
 
 function PrivacyDemo(){
   const steps=["The prompt stays inside the district boundary","VEGA checks for private information","The local model builds a guided response","Sources and limits appear beside the answer"];
+  const reqStep=useStepCycle(3,1500);
   return <div className="visual-stack">
     <div className="evidence-row">
       <figure className="evidence-photo"><img src="/laptop-code.jpg" alt="A laptop running local code, representing on-device processing"/><figcaption>Local processing · Unsplash</figcaption></figure>
-      <div className="privacy-demo"><header><AppGlyph/><b>VEGA PRIVACY TRACE</b><span><i/> PROTECTED</span></header><section><div className="privacy-device"><small>STUDENT DEVICE</small><b>Explain this assignment</b></div><i>→</i><div className="privacy-core"><span>LOCAL</span><b>CCSD</b><small>PRIVACY CHECK</small></div><i>→</i><div className="privacy-answer"><small>GROUNDED ANSWER</small><b>Guidance + sources</b></div></section><div className="privacy-bar"><span>NO AD NETWORK</span><span>NO COMMERCIAL TRAINING</span><span>NO THIRD-PARTY SALE</span></div><footer><b>REQUEST PATH</b><span>DEVICE → DISTRICT SERVER → STUDENT</span></footer></div>
+      <div className="privacy-demo"><header><AppGlyph/><b>VEGA PRIVACY TRACE</b><span><i/> PROTECTED</span></header><section><div className={`privacy-device${reqStep===0?" active":reqStep>0?" done":""}`}><small>STUDENT DEVICE</small><b>Explain this assignment</b></div><i className={reqStep===0?"pulse":reqStep>0?"done":""}>→</i><div className={`privacy-core${reqStep===1?" active":reqStep>1?" done":""}`}><span>LOCAL</span><b>CCSD</b><small>PRIVACY CHECK</small></div><i className={reqStep===1?"pulse":reqStep>1?"done":""}>→</i><div className={`privacy-answer${reqStep===2?" active":""}`}><small>GROUNDED ANSWER</small><b>Guidance + sources</b></div></section><div className="privacy-bar"><span>NO AD NETWORK</span><span>NO COMMERCIAL TRAINING</span><span>NO THIRD-PARTY SALE</span></div><footer><b>REQUEST PATH</b><span>DEVICE → DISTRICT SERVER → STUDENT</span></footer></div>
     </div>
     <TimedCaption steps={steps} pace={2200}/>
   </div>
@@ -144,9 +153,13 @@ function SlopBook(){
 }
 
 function SlopeGraph({revealed}:{revealed:boolean}){
-  const pad=30,w=260,h=210,xMax=6,yMax=9;
-  const toX=(x:number)=>pad+(x/xMax)*(w-pad*1.4);
-  const toY=(y:number)=>h-pad-(y/yMax)*(h-pad*1.5);
+  // Equal pixels-per-unit on both axes -- a slope of 2 should look like a
+  // slope of 2, not be stretched or squashed by mismatched grid cells.
+  const pad=30,h=210,xMax=6,yMax=9;
+  const scale=(h-pad*2)/yMax;
+  const w=pad*2+xMax*scale;
+  const toX=(x:number)=>pad+x*scale;
+  const toY=(y:number)=>h-pad-y*scale;
   const a={x:1,y:2},b={x:4,y:8};
   return <svg className={`slope-graph${revealed?" revealed":""}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Graph of a line through the points 1, 2 and 4, 8 with a slope of 2">
     <g className="grid">{Array.from({length:xMax+1}).map((_,i)=><line key={`v${i}`} x1={toX(i)} x2={toX(i)} y1={toY(0)} y2={toY(yMax)}/>)}{Array.from({length:4}).map((_,i)=>{const y=i*3;return <line key={`h${i}`} x1={toX(0)} x2={toX(xMax)} y1={toY(y)} y2={toY(y)}/>})}</g>
@@ -154,7 +167,7 @@ function SlopeGraph({revealed}:{revealed:boolean}){
     <line className="axis" x1={toX(0)} x2={toX(0)} y1={toY(0)} y2={toY(yMax)}/>
     <line className="run-dash" x1={toX(a.x)} x2={toX(b.x)} y1={toY(a.y)} y2={toY(a.y)}/>
     <line className="rise-dash" x1={toX(b.x)} x2={toX(b.x)} y1={toY(a.y)} y2={toY(b.y)}/>
-    <line className="fit" x1={toX(.3)} x2={toX(5.4)} y1={toY(.6)} y2={toY(10.8)}/>
+    <line className="fit" x1={toX(.3)} x2={toX(4.5)} y1={toY(.6)} y2={toY(9)}/>
     <circle cx={toX(a.x)} cy={toY(a.y)} r={4.5}/>
     <circle cx={toX(b.x)} cy={toY(b.y)} r={4.5}/>
     <text x={(toX(a.x)+toX(b.x))/2} y={toY(a.y)+16} textAnchor="middle">run 3</text>
@@ -299,10 +312,10 @@ function Visual({type}:{type:Visual}){
 }
 
 export default function Home(){
-  const [active,setActive]=useState(0);const [notes,setNotes]=useState(false);const [playing,setPlaying]=useState(false);const [started,setStarted]=useState(false);const [intro,setIntro]=useState<"ready"|"playing"|"hold"|"done">("ready");const [remaining,setRemaining]=useState(duration);const [closingTransition,setClosingTransition]=useState<"idle"|"playing"|"fading">("idle");const touchStart=useRef(0);const introVideo=useRef<HTMLVideoElement>(null);const slide=slides[active];const elapsed=duration-remaining;
+  const [active,setActive]=useState(0);const [notes,setNotes]=useState(false);const [playing,setPlaying]=useState(false);const [started,setStarted]=useState(false);const [intro,setIntro]=useState<"ready"|"playing"|"hold"|"done">("ready");const [remaining,setRemaining]=useState(duration);const [closingTransition,setClosingTransition]=useState<"idle"|"playing"|"fading"|"revealing">("idle");const touchStart=useRef(0);const introVideo=useRef<HTMLVideoElement>(null);const slide=slides[active];const elapsed=duration-remaining;
   const timeline=useMemo(()=>Math.max(0,Math.min(100,elapsed/duration*100)),[elapsed]);
   const go=useCallback((next:number)=>{const target=Math.max(0,Math.min(slides.length-1,next));if(target===active)return;if(active===slides.length-2&&target===slides.length-1){setActive(target);setClosingTransition("playing");return}document.documentElement.dataset.slideDirection=target>active?"forward":"back";const doc=document as Document&{startViewTransition?:(update:()=>void)=>void};if(doc.startViewTransition)doc.startViewTransition(()=>setActive(target));else setActive(target)},[active]);
-  const endClosingTransition=useCallback(()=>{setClosingTransition("fading");window.setTimeout(()=>setClosingTransition("idle"),480)},[]);
+  const endClosingTransition=useCallback(()=>{setClosingTransition("fading");window.setTimeout(()=>setClosingTransition("revealing"),450);window.setTimeout(()=>setClosingTransition("idle"),450+1050)},[]);
   const startPresentation=useCallback(()=>{setActive(0);setRemaining(duration);setNotes(false);setPlaying(false);setStarted(false);setIntro("playing");document.documentElement.requestFullscreen?.().catch(()=>{})},[]);
   const finishIntro=useCallback(()=>{setIntro("done");window.setTimeout(()=>{setStarted(true);setPlaying(true)},650)},[]);
   useEffect(()=>{if(!playing)return;const id=window.setInterval(()=>setRemaining(value=>{if(value<=1){setPlaying(false);return 0}return value-1}),1000);return()=>window.clearInterval(id)},[playing]);
@@ -311,18 +324,23 @@ export default function Home(){
   useEffect(()=>{
     if(intro!=="playing")return;
     const video=introVideo.current;if(!video)return;
-    const SLOWDOWN_WINDOW=2.4,MIN_RATE=0.32;
+    const SLOWDOWN_WINDOW=2.4,MIN_RATE=0.45;
     let raf=0;
     const onMeta=()=>{if(video.duration)video.parentElement?.style.setProperty("--intro-duration",`${video.duration}s`)};
     video.addEventListener("loadedmetadata",onMeta);
+    const setRate=(rate:number)=>{if(Math.abs(video.playbackRate-rate)>0.015)video.playbackRate=rate};
     const tick=()=>{
       if(video.duration&&!Number.isNaN(video.duration)){
         const remainingTime=video.duration-video.currentTime;
         if(remainingTime<=SLOWDOWN_WINDOW){
           const t=Math.max(0,remainingTime/SLOWDOWN_WINDOW);
-          video.playbackRate=MIN_RATE+(1-MIN_RATE)*(t*t);
-        }else if(video.playbackRate!==1){
-          video.playbackRate=1;
+          // Smoothstep instead of t*t: eases the rate down gently at both ends of the
+          // window, instead of accelerating the slowdown itself right at the very end
+          // (which read as choppy -- each rate change forces the decoder to re-pace).
+          const eased=t*t*(3-2*t);
+          setRate(MIN_RATE+(1-MIN_RATE)*eased);
+        }else{
+          setRate(1);
         }
       }
       raf=requestAnimationFrame(tick);
@@ -342,7 +360,7 @@ export default function Home(){
       {notes&&<aside className="speaker-note"><div><span>{slide.speaker}</span><b>FULL SCRIPT</b></div><p>{slide.script}</p></aside>}
     </section>
     <footer className="deck-controls"><div className="time"><button onClick={()=>setPlaying(value=>!value)} aria-label={playing?"Pause timer":"Start timer"}>{playing?"Ⅱ":"▶"}</button><b>{String(Math.floor(remaining/60)).padStart(2,"0")}:{String(remaining%60).padStart(2,"0")}</b><span>{playing?"LIVE":"READY"}</span></div><div className="slide-dots">{slides.map((item,i)=><button key={item.chapter} className={i===active?"active":i<active?"past":""} onClick={()=>go(i)} aria-label={`Go to slide ${i+1}`}><i/><span>{item.speaker}</span></button>)}</div><div className="nav-buttons"><button onClick={()=>setNotes(value=>!value)} className={notes?"active":""}>N · SCRIPT</button><button onClick={()=>go(active-1)} disabled={active===0}>←</button><b>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</b><button onClick={()=>go(active+1)} disabled={active===slides.length-1}>→</button></div><i className="timeline"><span style={{width:`${timeline}%`}}/></i></footer>
-    {closingTransition!=="idle"&&<div className={`closing-transition ${closingTransition==="fading"?"fading":""}`}><video src="/datacenter-transition.mp4" autoPlay muted playsInline onEnded={endClosingTransition} onError={endClosingTransition}/><div className="closing-transition-blackout"/></div>}
+    {closingTransition!=="idle"&&<div className={`closing-transition ${closingTransition}`}>{closingTransition==="playing"&&<video src="/datacenter-transition.mp4" autoPlay muted playsInline onEnded={endClosingTransition} onError={endClosingTransition}/>}<div className="closing-transition-blackout"/></div>}
     {intro==="ready"&&<div className="launch-screen" onClick={event=>event.stopPropagation()}><div className="launch-card"><span className="launch-kicker">PRESENTER VIEW</span><VegaMark large/><h2>Ready<br/><em>when you are.</em></h2><p>Click start for the cinematic opening. It ends on the title card, then hands off to slide one.</p><button onClick={startPresentation}><span>START PRESENTATION</span><i>→</i></button><small>PRESS ENTER TO START · ARROWS OR SPACE TO ADVANCE · N FOR SCRIPT</small></div></div>}
     {(intro==="playing"||intro==="hold"||(!started&&intro==="done"))&&<div className={`cinematic-intro ${intro==="hold"?"holding":""} ${intro==="done"?"finishing":""}`} onClick={event=>{event.stopPropagation();if(intro==="hold")finishIntro()}}><video ref={introVideo} src="/vega-intro.mp4" poster="/vega-intro-poster.jpg" autoPlay muted playsInline onEnded={()=>setIntro("hold")} onError={()=>setIntro("hold")}/><div className="cinematic-shade"/><div className="cinematic-scan"/><div className="cinematic-blackout"/><div className="cinematic-title"><span>CCSD LOCAL INTELLIGENCE</span><div className="cinematic-name"><b>V</b><strong>VEGA</strong></div><p>DESIGNED HERE <i/> BUILT FOR HERE</p><div className="cinematic-team"><span>SABRINA</span><span>KALEB</span><span>REBEKAH</span><span>MILA</span><span>MAX</span></div></div><div className="cinematic-progress"><span/><small>{intro==="hold"?"PRESS SPACE TO BEGIN":"INITIALIZING PRESENTATION"}</small></div><button onClick={event=>{event.stopPropagation();if(intro==="hold")finishIntro();else setIntro("hold")}}>{intro==="hold"?"BEGIN PRESENTATION":"SKIP TO TITLE"}</button></div>}
   </main>;

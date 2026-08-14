@@ -12,9 +12,12 @@ const QR_GRID = 41;
 const QR_SUPER = 2;
 const QR_WORLD_SIZE = 5;
 // Shifted well clear of the left-side title/quote text column -- the V used
-// to sit centered-left and cross right through the copy.
+// to sit centered-left and cross right through the copy. Tuned against this
+// reference aspect ratio; narrower windows scale the whole composition down
+// (see layoutScale) instead of letting the QR run off the edge of the screen.
 const QR_CX = 6.77;
 const V_CX = 0.17;
+const REFERENCE_ASPECT = 2.0;
 
 function glowTexture(THREE: typeof import("three")) {
   const size = 64;
@@ -55,22 +58,21 @@ function screenStart(fovDeg: number, aspect: number, cameraZ: number): [number, 
 }
 
 // Sample points along the two strokes of a V, centered on the left half of the scene.
-function vTargets(count: number): [number, number, number][] {
+function vTargets(count: number, cx: number, scale: number): [number, number, number][] {
   const points: [number, number, number][] = [];
-  const strokeWidth = 0.24;
-  const cx = V_CX;
+  const strokeWidth = 0.24 * scale;
   const left = count >> 1, right = count - left;
   for (let i = 0; i < left; i++) {
     const t = i / (left - 1);
-    const x = cx - 2.2 + t * 2.2, y = 2.75 - t * 5.5;
+    const x = cx - 2.2 * scale + t * 2.2 * scale, y = (2.75 - t * 5.5) * scale;
     const jitter = (Math.random() - 0.5) * strokeWidth;
-    points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5]);
+    points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5 * scale]);
   }
   for (let i = 0; i < right; i++) {
     const t = i / (right - 1);
-    const x = cx + t * 2.2, y = -2.65 + t * 5.5;
+    const x = cx + t * 2.2 * scale, y = (-2.65 + t * 5.5) * scale;
     const jitter = (Math.random() - 0.5) * strokeWidth;
-    points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5]);
+    points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5 * scale]);
   }
   return points;
 }
@@ -102,15 +104,15 @@ function readQrModules(image: HTMLImageElement): boolean[][] {
 // per "on" cell. Because every cell (inside a module or across a module
 // boundary) is the same size and spacing, dark cells tile together into
 // solid, gap-free squares -- the same geometry a real QR reader expects.
-function qrTargets(modules: boolean[][]): [number, number, number][] {
-  const cell = QR_WORLD_SIZE / QR_GRID / QR_SUPER;
-  const half = QR_WORLD_SIZE / 2;
+function qrTargets(modules: boolean[][], cx: number, worldSize: number): [number, number, number][] {
+  const cell = worldSize / QR_GRID / QR_SUPER;
+  const half = worldSize / 2;
   const points: [number, number, number][] = [];
   for (let row = 0; row < QR_GRID * QR_SUPER; row++) {
     const moduleRow = Math.floor(row / QR_SUPER);
     for (let col = 0; col < QR_GRID * QR_SUPER; col++) {
       if (!modules[moduleRow][Math.floor(col / QR_SUPER)]) continue;
-      const x = QR_CX - half + (col + 0.5) * cell;
+      const x = cx - half + (col + 0.5) * cell;
       const y = half - (row + 0.5) * cell;
       points.push([x, y, 0]);
     }
@@ -158,8 +160,14 @@ export default function ParticleV() {
       observer.observe(el);
       resize();
 
+      // Shrink the whole V+QR composition (uniformly, around center) on
+      // windows narrower than the reference aspect, instead of letting the
+      // QR run past the right edge of the screen.
+      const layoutScale = Math.min(1, camera.aspect / REFERENCE_ASPECT);
+      const vCx = V_CX * layoutScale, qrCx = QR_CX * layoutScale, qrWorldSize = QR_WORLD_SIZE * layoutScale;
+
       // ---- V: a soft glowing swarm, stays lively and drifting forever ----
-      const vTarget = vTargets(V_COUNT);
+      const vTarget = vTargets(V_COUNT, vCx, layoutScale);
       const vCount = vTarget.length;
       const vPositions = new Float32Array(vCount * 3);
       const vStarts = new Float32Array(vCount * 3);
@@ -188,7 +196,7 @@ export default function ParticleV() {
 
       // ---- QR: precise squares that fly in bright, then lock to a crisp dark grid ----
       const qrModules = qrImage ? readQrModules(qrImage) : null;
-      const qrTarget = qrModules ? qrTargets(qrModules) : [];
+      const qrTarget = qrModules ? qrTargets(qrModules, qrCx, qrWorldSize) : [];
       const qrCount = qrTarget.length;
       const qrPositions = new Float32Array(qrCount * 3);
       const qrStarts = new Float32Array(qrCount * 3);
@@ -212,7 +220,7 @@ export default function ParticleV() {
       // scene instead of sitting dark-on-light. Most phone cameras (iOS and
       // ML-Kit-based Android scanners) read inverted-contrast QR codes fine,
       // so it stays scannable without a big white rectangle in the scene.
-      const qrCell = QR_WORLD_SIZE / QR_GRID / QR_SUPER;
+      const qrCell = qrWorldSize / QR_GRID / QR_SUPER;
       const qrMaterial = new THREE.PointsMaterial({ size: qrCell * 1.3, vertexColors: true, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
       const qrPoints = new THREE.Points(qrGeometry, qrMaterial);
       scene.add(qrPoints);
