@@ -58,7 +58,7 @@ const slides: Slide[] = [
   },
   {
     speaker:"MAX", chapter:"OUR FUTURE", title:<>We choose<br/><em>to build.</em></>,
-    body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong><div className="try-it-card"><img src="/prototype-qr.svg" alt="QR code linking to the VEGA prototype"/><div><b>TRY VEGA YOURSELF</b><span>vega.doubinemail.workers.dev/prototype</span></div></div></>,
+    body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong><div className="try-it-card"><img src="/prototype-qr.png" alt="QR code linking to the VEGA prototype"/><div><b>TRY VEGA YOURSELF</b><span>vega.doubinemail.workers.dev/prototype</span></div></div></>,
     script:"VEGA is a prototype. It is not finished, and it is not currently an official CCSD system. But it proves something important. Students do not have to wait for somebody else to decide what the future of education should look like. We can help design it. The next step would be a small pilot using district-controlled hardware, trusted educational sources, and feedback from actual students and teachers. Then we measure it. Is it useful? Is it safe? Does it save teachers time? Does it help students learn? If the answer is no, we improve it. If the answer is yes, we have created something that could reach far beyond the five people standing here. AI is already entering our schools. The real question is whether we simply accept whatever arrives, or help build something that answers to our community. We choose to build. This is VEGA. Our AI. Our schools. Our future. Thank you. We are ready for your questions.",
     seconds:40, visual:"close", tone:"photo", photo:"/vegas-skyline.jpg", credit:"Las Vegas · Tom Podmore / Unsplash"
   },
@@ -87,12 +87,24 @@ function TeamSpotlight(){
 
 function DistrictDemo(){
   const steps=["A teacher searches the shared library","VEGA finds an approved CCSD resource","The teacher adapts it for this class","The improved activity returns to the district"];
-  return <div className="visual-stack"><div className="district-demo"><header><AppGlyph/><b>VEGA RESOURCE EXCHANGE</b><span>CCSD NETWORK</span></header><div className="district-search"><span>⌕</span><p>slope exit ticket for Algebra I</p><i>SEARCH</i></div><div className="district-result"><small>APPROVED RESOURCE</small><b>Graphing Linear Relationships</b><p>Exit ticket · 5 questions · Accessible format</p><div><span>South CTA</span><span>CCSD REVIEWED</span></div></div><div className="district-flow"><span>FIND</span><i>→</i><span>ADAPT</span><i>→</i><span>SHARE</span></div><footer><b>327 SCHOOLS</b><span>ONE TRUSTED STARTING POINT</span></footer></div><TimedCaption steps={steps} pace={2100}/></div>
+  return <div className="visual-stack">
+    <div className="evidence-row">
+      <figure className="evidence-photo"><img src="/team-classroom.jpg" alt="CCSD students working on laptops together in a classroom"/><figcaption>CCSD classroom · The Nevada Independent</figcaption></figure>
+      <div className="district-demo"><header><AppGlyph/><b>VEGA RESOURCE EXCHANGE</b><span>CCSD NETWORK</span></header><div className="district-search"><span>⌕</span><p>slope exit ticket for Algebra I</p><i>SEARCH</i></div><div className="district-result"><small>APPROVED RESOURCE</small><b>Graphing Linear Relationships</b><p>Exit ticket · 5 questions · Accessible format</p><div><span>South CTA</span><span>CCSD REVIEWED</span></div></div><div className="district-flow"><span>FIND</span><i>→</i><span>ADAPT</span><i>→</i><span>SHARE</span></div><footer><b>327 SCHOOLS</b><span>ONE TRUSTED STARTING POINT</span></footer></div>
+    </div>
+    <TimedCaption steps={steps} pace={2100}/>
+  </div>
 }
 
 function PrivacyDemo(){
   const steps=["The prompt stays inside the district boundary","VEGA checks for private information","The local model builds a guided response","Sources and limits appear beside the answer"];
-  return <div className="visual-stack"><div className="privacy-demo"><header><AppGlyph/><b>VEGA PRIVACY TRACE</b><span><i/> PROTECTED</span></header><section><div className="privacy-device"><small>STUDENT DEVICE</small><b>Explain this assignment</b></div><i>→</i><div className="privacy-core"><span>LOCAL</span><b>CCSD</b><small>PRIVACY CHECK</small></div><i>→</i><div className="privacy-answer"><small>GROUNDED ANSWER</small><b>Guidance + sources</b></div></section><div className="privacy-bar"><span>NO AD NETWORK</span><span>NO COMMERCIAL TRAINING</span><span>NO THIRD-PARTY SALE</span></div><footer><b>REQUEST PATH</b><span>DEVICE → DISTRICT SERVER → STUDENT</span></footer></div><TimedCaption steps={steps} pace={2200}/></div>
+  return <div className="visual-stack">
+    <div className="evidence-row">
+      <figure className="evidence-photo"><img src="/laptop-code.jpg" alt="A laptop running local code, representing on-device processing"/><figcaption>Local processing · Unsplash</figcaption></figure>
+      <div className="privacy-demo"><header><AppGlyph/><b>VEGA PRIVACY TRACE</b><span><i/> PROTECTED</span></header><section><div className="privacy-device"><small>STUDENT DEVICE</small><b>Explain this assignment</b></div><i>→</i><div className="privacy-core"><span>LOCAL</span><b>CCSD</b><small>PRIVACY CHECK</small></div><i>→</i><div className="privacy-answer"><small>GROUNDED ANSWER</small><b>Guidance + sources</b></div></section><div className="privacy-bar"><span>NO AD NETWORK</span><span>NO COMMERCIAL TRAINING</span><span>NO THIRD-PARTY SALE</span></div><footer><b>REQUEST PATH</b><span>DEVICE → DISTRICT SERVER → STUDENT</span></footer></div>
+    </div>
+    <TimedCaption steps={steps} pace={2200}/>
+  </div>
 }
 
 function EnvironmentEvidence(){return <div className="environment-evidence">
@@ -117,10 +129,14 @@ const slopPosts = [
 function SlopBook(){
   const [index,setIndex]=useState(0);
   useEffect(()=>{const id=window.setInterval(()=>setIndex(value=>(value+1)%slopPosts.length),5000);return()=>window.clearInterval(id)},[]);
-  const post=slopPosts[index];
+  const left=slopPosts[index];
+  const right=slopPosts[(index+1)%slopPosts.length];
   return <div className="slop-book" aria-label="A flipping feed of AI slop examples, five seconds each">
-    <article key={post.headline}><img src={post.image} alt=""/><i/><div><span>{post.tag}</span><b>{post.headline}</b><small>{post.meta}</small></div></article>
-    <div className="slop-book-dots">{slopPosts.map((item,i)=><i key={item.headline} className={i===index?"active":""}/>)}</div>
+    <div className="slop-book-row">
+      <article key={`l-${left.headline}`}><img src={left.image} alt=""/><i/><div><span>{left.tag}</span><b>{left.headline}</b><small>{left.meta}</small></div></article>
+      <article key={`r-${right.headline}`}><img src={right.image} alt=""/><i/><div><span>{right.tag}</span><b>{right.headline}</b><small>{right.meta}</small></div></article>
+    </div>
+    <div className="slop-book-dots">{slopPosts.map((item,i)=><i key={item.headline} className={i===index||i===(index+1)%slopPosts.length?"active":""}/>)}</div>
     <strong>THE FEED NEVER RUNS OUT.<br/><em>THE IDEAS ALREADY DID.</em></strong>
   </div>
 }
@@ -323,7 +339,7 @@ export default function Home(){
       {notes&&<aside className="speaker-note"><div><span>{slide.speaker}</span><b>FULL SCRIPT</b></div><p>{slide.script}</p></aside>}
     </section>
     <footer className="deck-controls"><div className="time"><button onClick={()=>setPlaying(value=>!value)} aria-label={playing?"Pause timer":"Start timer"}>{playing?"Ⅱ":"▶"}</button><b>{String(Math.floor(remaining/60)).padStart(2,"0")}:{String(remaining%60).padStart(2,"0")}</b><span>{playing?"LIVE":"READY"}</span></div><div className="slide-dots">{slides.map((item,i)=><button key={item.chapter} className={i===active?"active":i<active?"past":""} onClick={()=>go(i)} aria-label={`Go to slide ${i+1}`}><i/><span>{item.speaker}</span></button>)}</div><div className="nav-buttons"><button onClick={()=>setNotes(value=>!value)} className={notes?"active":""}>N · SCRIPT</button><button onClick={()=>go(active-1)} disabled={active===0}>←</button><b>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</b><button onClick={()=>go(active+1)} disabled={active===slides.length-1}>→</button></div><i className="timeline"><span style={{width:`${timeline}%`}}/></i></footer>
-    {intro==="ready"&&<div className="launch-screen" onClick={event=>event.stopPropagation()}><div className="launch-card"><span className="launch-kicker">VEGA PRESENTATION SYSTEM</span><VegaMark large/><h2>Everything is staged.<br/><em>You control the story.</em></h2><p>One click plays the silent cinematic opening, settles on the title and team, then hands every slide to you.</p><button onClick={startPresentation}><span>START PRESENTATION</span><i>→</i></button><small>PRESS ENTER TO START · ARROWS OR SPACE TO ADVANCE · N FOR SCRIPT</small></div></div>}
+    {intro==="ready"&&<div className="launch-screen" onClick={event=>event.stopPropagation()}><div className="launch-card"><span className="launch-kicker">PRESENTER VIEW</span><VegaMark large/><h2>Ready<br/><em>when you are.</em></h2><p>Click start for the cinematic opening. It ends on the title card, then hands off to slide one.</p><button onClick={startPresentation}><span>START PRESENTATION</span><i>→</i></button><small>PRESS ENTER TO START · ARROWS OR SPACE TO ADVANCE · N FOR SCRIPT</small></div></div>}
     {(intro==="playing"||intro==="hold"||(!started&&intro==="done"))&&<div className={`cinematic-intro ${intro==="hold"?"holding":""} ${intro==="done"?"finishing":""}`} onClick={event=>{event.stopPropagation();if(intro==="hold")finishIntro()}}><video ref={introVideo} src="/vega-intro.mp4" poster="/vega-intro-poster.jpg" autoPlay muted playsInline onEnded={()=>setIntro("hold")} onError={()=>setIntro("hold")}/><div className="cinematic-shade"/><div className="cinematic-scan"/><div className="cinematic-title"><span>CCSD LOCAL INTELLIGENCE</span><div className="cinematic-name"><b>V</b><strong>VEGA</strong></div><p>DESIGNED HERE <i/> BUILT FOR HERE</p><div className="cinematic-team"><span>SABRINA</span><span>KALEB</span><span>REBEKAH</span><span>MILA</span><span>MAX</span></div></div><div className="cinematic-progress"><span/><small>{intro==="hold"?"PRESS SPACE TO BEGIN":"INITIALIZING PRESENTATION"}</small></div><button onClick={event=>{event.stopPropagation();if(intro==="hold")finishIntro();else setIntro("hold")}}>{intro==="hold"?"BEGIN PRESENTATION":"SKIP TO TITLE"}</button></div>}
   </main>;
 }
