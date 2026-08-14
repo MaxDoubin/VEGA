@@ -14,10 +14,6 @@ const STAR_LAYOUT: [number, number, number][] = [
   [1.05, 0.7, -0.2],
   [2.0, 1.85, 0],
 ];
-// Framed inside the open top of the V rather than sitting on its outline,
-// so VEGA reads as its own bright anchor rather than a sixth point on the V.
-const CORE_POS: [number, number, number] = [0, 1.0, 0.75];
-
 function glowTexture(THREE: typeof import("three")) {
   const size = 128;
   const canvas = document.createElement("canvas");
@@ -105,23 +101,6 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
       const glow = glowTexture(THREE);
       const star = starTexture(THREE);
 
-      // A soft, large accent-tinted glow sitting behind the whole formation,
-      // like a faint nebula, so the cluster reads as one composed scene.
-      const nebula = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0x6bdcff, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }));
-      nebula.scale.set(9, 6.5, 1);
-      nebula.position.set(...CORE_POS);
-      nebula.position.z -= 1.4;
-      rig.add(nebula);
-
-      const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xd8ff3e, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
-      coreGlow.scale.setScalar(2.9);
-      coreGlow.position.set(...CORE_POS);
-      rig.add(coreGlow);
-      const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: star, color: 0xe8ffb0, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false }));
-      core.scale.setScalar(1.1);
-      core.position.set(...CORE_POS);
-      rig.add(core);
-
       const starColor = new THREE.Color(0xfff2d8), starFocusColor = new THREE.Color(0xd8ff3e);
       const haloColor = new THREE.Color(0xffe6b0), haloFocusColor = new THREE.Color(0xd8ff3e);
       const nodeCores: THREE.Sprite[] = [];
@@ -184,10 +163,6 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
         const age = time - startTime;
         const focused = focusRef.current;
 
-        const corePulse = 1 + Math.sin(time * 1.4) * 0.1;
-        core.scale.setScalar(1.1 * corePulse);
-        coreGlow.scale.setScalar(2.9 + Math.sin(time * 1.4) * 0.25);
-        nebula.material.opacity = 0.13 + Math.sin(time * 0.5) * 0.03;
         rig.rotation.y += (mx * 0.12 - rig.rotation.y) * 0.02;
         rig.rotation.x += (my * 0.06 - rig.rotation.x) * 0.02;
         rig.updateMatrixWorld();
@@ -286,9 +261,6 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
         (links.material as THREE.Material).dispose();
         dustGeometry.dispose();
         (dust.material as THREE.Material).dispose();
-        (core.material as THREE.Material).dispose();
-        (coreGlow.material as THREE.Material).dispose();
-        (nebula.material as THREE.Material).dispose();
         if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
       };
     }).catch(() => {});
