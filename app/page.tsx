@@ -64,7 +64,7 @@ const slides: Slide[] = [
   },
   {
     speaker:"MAX", chapter:"OUR FUTURE", title:<>Stop accepting.<br/><em>Start creating.</em></>,
-    body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong></>,
+    body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong><div className="try-it-card"><img src="/prototype-qr.svg" alt="QR code linking to the VEGA prototype"/><div><b>TRY VEGA YOURSELF</b><span>vega.doubinemail.workers.dev/prototype</span></div></div></>,
     script:"VEGA is a prototype. It is not finished, and it is not currently an official CCSD system. But it proves something important. Students do not have to wait for somebody else to decide what the future of education should look like. We can help design it. The next step would be a small pilot using district-controlled hardware, trusted educational sources, and feedback from actual students and teachers. Then we measure it. Is it useful? Is it safe? Does it save teachers time? Does it help students learn? If the answer is no, we improve it. If the answer is yes, we have created something that could reach far beyond the five people standing here. AI is already entering our schools. The real question is whether we simply accept whatever arrives, or help build something that answers to our community. We choose to build. This is VEGA. Our AI. Our schools. Our future. Thank you. We are ready for your questions.",
     seconds:40, visual:"close", tone:"photo", photo:"/vegas-skyline.jpg", credit:"Las Vegas · Tom Podmore / Unsplash"
   },
