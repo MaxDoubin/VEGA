@@ -1,0 +1,81 @@
+/* Presentation polish: full-slide imagery + visible demo typing */
+
+.deck-slide:before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+  opacity:.34;
+  filter:saturate(.82) contrast(1.03);
+  transform:scale(1.015);
+  pointer-events:none;
+}
+.deck-slide:after{
+  content:"";
+  display:block!important;
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,var(--bg) 0 30%,color-mix(in srgb,var(--bg) 92%,transparent) 42%,color-mix(in srgb,var(--bg) 48%,transparent) 67%,color-mix(in srgb,var(--bg) 22%,transparent) 100%),
+    linear-gradient(0deg,#000a 0,transparent 48%,#0003 100%);
+}
+.deck-slide>.slide-photo,.deck-slide>.slide-reel{z-index:2;opacity:.5;mix-blend-mode:screen}
+.deck-slide>.slide-copy,.deck-slide>.slide-graphic{z-index:4}
+
+.slide-1:before{background-image:url("https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+.slide-2:before{background-image:url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+.slide-3:before{background-image:url("/lake-mead-change.webp")}
+.slide-4:before{background-image:url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+.slide-5:before{background-image:url("https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+.slide-6:before{background-image:url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+.slide-7:before{background-image:url("https://images.unsplash.com/photo-1684575571081-d6abda485519?auto=format&fit=crop&fm=jpg&q=82&w=2400")}
+
+.slide-1:before,.slide-2:before,.slide-4:before,.slide-5:before,.slide-6:before,.slide-7:before{animation:bgDrift 14s ease-out both}
+.slide-3:before{opacity:.46;filter:saturate(.8) contrast(1.08) brightness(.8)}
+
+.staged-demo .demo-question p{
+  position:relative;
+  display:block;
+  width:0;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  clip-path:none!important;
+  transition:none!important;
+}
+.stage-1 .demo-question p,.stage-2 .demo-question p,.stage-3 .demo-question p,.stage-4 .demo-question p{
+  animation:demoType 1.55s steps(58,end) .12s forwards;
+}
+.staged-demo .demo-question p:after{
+  content:"";
+  display:inline-block;
+  width:1px;
+  height:1.15em;
+  margin-left:2px;
+  vertical-align:-.15em;
+  background:#d7ff34;
+  opacity:0;
+}
+.stage-1 .demo-question p:after{
+  animation:demoCaret .7s steps(1,end) .12s infinite;
+}
+.stage-2 .demo-question p:after,.stage-3 .demo-question p:after,.stage-4 .demo-question p:after{opacity:0}
+
+@keyframes demoType{from{width:0}to{width:58ch}}
+@keyframes demoCaret{0%,48%{opacity:1}49%,100%{opacity:0}}
+@keyframes bgDrift{from{transform:scale(1.05)}to{transform:scale(1.015)}}
+
+@media(max-width:760px){
+  .deck-slide:before{opacity:.22}
+  .deck-slide:after{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 90%,transparent) 0 50%,color-mix(in srgb,var(--bg) 56%,transparent) 100%),linear-gradient(0deg,#0009,transparent 56%)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .stage-1 .demo-question p,.stage-2 .demo-question p,.stage-3 .demo-question p,.stage-4 .demo-question p{width:auto;animation:none}
+  .stage-1 .demo-question p:after{display:none}
+  .deck-slide:before{animation:none}
+}
