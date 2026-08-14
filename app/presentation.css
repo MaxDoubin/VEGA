@@ -212,7 +212,8 @@ body:has(.deck){overflow:hidden;background:#050506}
 
 /* ===== Team constellation, full-bleed across the entire slide (slide 6) ===== */
 .slide-6 .slide-graphic{position:absolute;inset:0;z-index:1;min-height:auto;padding:0;animation:none}
-.slide-6 .slide-photo>i{background:linear-gradient(90deg,var(--bg) 0 38%,color-mix(in srgb,var(--bg) 78%,transparent) 55%,color-mix(in srgb,var(--bg) 40%,transparent) 100%),linear-gradient(0deg,#000a,transparent 55%)}
+.slide-6 .slide-photo img{filter:grayscale(.55) brightness(.5) contrast(1.05)}
+.slide-6 .slide-photo>i{background:linear-gradient(90deg,var(--bg) 0 42%,color-mix(in srgb,var(--bg) 88%,transparent) 60%,color-mix(in srgb,var(--bg) 62%,transparent) 100%),linear-gradient(0deg,#000c,transparent 60%)}
 .team-showcase{position:absolute;inset:0;width:100%;height:100%}
 .team-constellation{position:absolute;inset:0}
 .constellation-canvas{position:absolute;inset:0}
