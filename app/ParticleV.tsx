@@ -196,7 +196,6 @@ export default function ParticleV() {
       const qrDelays = new Float32Array(qrCount);
       const qrDurations = new Float32Array(qrCount);
       const qrColors = new Float32Array(qrCount * 3);
-      let qrMaxSettle = 0;
       for (let i = 0; i < qrCount; i++) {
         const [sx, sy, sz] = screenStart(fov, camera.aspect, camera.position.z);
         qrStarts[i * 3] = sx; qrStarts[i * 3 + 1] = sy; qrStarts[i * 3 + 2] = sz;
@@ -205,31 +204,19 @@ export default function ParticleV() {
         qrPositions[i * 3] = sx; qrPositions[i * 3 + 1] = sy; qrPositions[i * 3 + 2] = sz;
         qrDelays[i] = Math.random() * 1.1;
         qrDurations[i] = 1.6 + Math.random() * 1.2;
-        qrMaxSettle = Math.max(qrMaxSettle, qrDelays[i] + qrDurations[i]);
       }
       const qrGeometry = new THREE.BufferGeometry();
       qrGeometry.setAttribute("position", new THREE.BufferAttribute(qrPositions, 3));
       qrGeometry.setAttribute("color", new THREE.BufferAttribute(qrColors, 3));
+      // Additive, no backing plate: the modules glow bright against the dark
+      // scene instead of sitting dark-on-light. Most phone cameras (iOS and
+      // ML-Kit-based Android scanners) read inverted-contrast QR codes fine,
+      // so it stays scannable without a big white rectangle in the scene.
       const qrCell = QR_WORLD_SIZE / QR_GRID / QR_SUPER;
-      const qrMaterial = new THREE.PointsMaterial({ size: qrCell * 1.24, vertexColors: true, sizeAttenuation: true });
+      const qrMaterial = new THREE.PointsMaterial({ size: qrCell * 1.3, vertexColors: true, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
       const qrPoints = new THREE.Points(qrGeometry, qrMaterial);
       scene.add(qrPoints);
-      const qrBright = new THREE.Color(0x8ff0ff), qrDark = new THREE.Color(0x0a0b0d), qrTmp = new THREE.Color();
-
-      // A light backing plate (with a real quiet zone) so the settled dark
-      // squares read as an actual scannable QR code, not glowing dots on black.
-      const plateSize = QR_WORLD_SIZE + 1.0;
-      const plateGeometry = new THREE.PlaneGeometry(plateSize, plateSize);
-      const plateMaterial = new THREE.MeshBasicMaterial({ color: 0xf3f4ee, transparent: true, opacity: 0 });
-      const plate = new THREE.Mesh(plateGeometry, plateMaterial);
-      plate.position.set(QR_CX, 0, -0.05);
-      scene.add(plate);
-      const haloTexture = glowTexture(THREE);
-      const haloMaterial = new THREE.SpriteMaterial({ map: haloTexture, color: 0x8ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-      const halo = new THREE.Sprite(haloMaterial);
-      halo.scale.set(plateSize * 1.7, plateSize * 1.7, 1);
-      halo.position.set(QR_CX, 0, -0.12);
-      scene.add(halo);
+      const qrDim = new THREE.Color(0x1c3f47), qrBright = new THREE.Color(0xcdf9ff), qrTmp = new THREE.Color();
 
       const ambientCount = 420;
       const ambientGeometry = new THREE.BufferGeometry();
@@ -280,16 +267,12 @@ export default function ParticleV() {
           qrPositions[ox] = qrStarts[ox] + (qrTargetArr[ox] - qrStarts[ox]) * eased;
           qrPositions[oy] = qrStarts[oy] + (qrTargetArr[oy] - qrStarts[oy]) * eased;
           qrPositions[oz] = qrStarts[oz] + (qrTargetArr[oz] - qrStarts[oz]) * eased;
-          qrTmp.copy(qrBright).lerp(qrDark, eased);
+          qrTmp.copy(qrDim).lerp(qrBright, eased);
           qrColors[ox] = qrTmp.r; qrColors[oy] = qrTmp.g; qrColors[oz] = qrTmp.b;
         }
         if (qrCount) {
           qrGeometry.attributes.position.needsUpdate = true;
           qrGeometry.attributes.color.needsUpdate = true;
-          const plateIn = Math.max(0, Math.min(1, (age - qrMaxSettle * 0.55) / (qrMaxSettle * 0.45 + 0.3)));
-          const plateEased = easeOutCubic(plateIn);
-          plateMaterial.opacity = plateEased * 0.97;
-          haloMaterial.opacity = plateEased * 0.3;
         }
 
         vPoints.rotation.y += (mx * 0.12 - vPoints.rotation.y) * 0.02;
@@ -313,10 +296,6 @@ export default function ParticleV() {
         glow.dispose();
         qrGeometry.dispose();
         qrMaterial.dispose();
-        plateGeometry.dispose();
-        plateMaterial.dispose();
-        haloTexture.dispose();
-        haloMaterial.dispose();
         ambientGeometry.dispose();
         (ambient.material as THREE.Material).dispose();
         if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
