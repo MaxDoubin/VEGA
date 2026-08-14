@@ -140,6 +140,17 @@ body:has(.deck){overflow:hidden;background:#050506}
 .live-demo-messages article>div{padding:12px 14px;border:1px solid #ffffff16;border-radius:12px;background:#181a20}
 .live-demo-messages article.vega>div{background:#171b16;border-color:#d7ff342e}
 .live-demo-messages article>div>p{margin:0;color:#dfe1db;font-size:12.5px;line-height:1.55;white-space:pre-line}
+.live-demo-messages .md{color:#dfe1db;font-size:12.5px;line-height:1.55}
+.live-demo-messages .md>*{margin:0 0 9px;white-space:pre-line}
+.live-demo-messages .md>*:last-child{margin-bottom:0}
+.live-demo-messages .md h1,.live-demo-messages .md h2,.live-demo-messages .md h3,.live-demo-messages .md h4{color:#fff;font-size:13.5px;font-weight:750;letter-spacing:-.01em;white-space:normal}
+.live-demo-messages .md hr{border:none;border-top:1px solid #ffffff1e;margin:11px 0}
+.live-demo-messages .md ul,.live-demo-messages .md ol{margin:0 0 9px;padding-left:18px;white-space:normal}
+.live-demo-messages .md li{margin:3px 0}
+.live-demo-messages .md li::marker{color:var(--accent,#d7ff34)}
+.live-demo-messages .md code{padding:1px 5px;border-radius:5px;background:#00000055;color:#eafff0;font:11px var(--font-geist-mono),monospace}
+.live-demo-messages .md .md-math,.live-demo-messages .md .md-math-block{font-style:italic;color:#c7d8ff}
+.live-demo-messages .md .md-math-block{text-align:center;padding:4px 0}
 .live-demo-sources{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
 .live-demo-sources a{color:#6bdbff;text-decoration:none;font:750 8px var(--font-geist-mono),monospace;letter-spacing:.04em;border-bottom:1px solid #6bdbff4a}
 .thinking-dots{display:flex;align-items:center;gap:5px;padding:14px}

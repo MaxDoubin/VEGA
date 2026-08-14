@@ -7,6 +7,7 @@ import DeckScene from "./DeckScene";
 import TeamConstellation from "./TeamConstellation";
 import ParticleV from "./ParticleV";
 import { answer, type Source } from "./lib/demoEngine";
+import { renderMarkdown } from "./lib/markdown";
 import "./presentation.css";
 
 type Speaker = "SABRINA" | "KALEB" | "REBEKAH" | "MILA" | "MAX";
@@ -288,7 +289,7 @@ function LiveDemo(){
             const isTyping=typingId===message.id;
             return <article key={message.id} className={message.who}>
               <i>{message.who==="vega"?"V":"Y"}</i>
-              <div><p>{isTyping?<TypedText text={message.text} onDone={()=>handleTyped(message.id)}/>:message.text}</p>{!isTyping&&message.sources&&<div className="live-demo-sources">{message.sources.map(source=><a key={source.url} href={source.url} target="_blank" rel="noreferrer" onClick={event=>event.stopPropagation()}>{source.name} ↗</a>)}</div>}</div>
+              <div>{isTyping?<p><TypedText text={message.text} onDone={()=>handleTyped(message.id)}/></p>:<div className="md">{renderMarkdown(message.text)}</div>}{!isTyping&&message.sources&&<div className="live-demo-sources">{message.sources.map(source=><a key={source.url} href={source.url} target="_blank" rel="noreferrer" onClick={event=>event.stopPropagation()}>{source.name} ↗</a>)}</div>}</div>
             </article>
           })}
           {thinking&&<article className="vega thinking"><i>V</i><div className="thinking-dots"><span/><span/><span/></div></article>}
