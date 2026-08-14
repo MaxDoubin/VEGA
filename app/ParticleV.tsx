@@ -2,8 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const V_COUNT = 1500;
-const QR_COUNT = 2800;
+const V_COUNT = 1700;
+// Measured directly from public/prototype-qr.png: a 900x900 PNG, 20px modules,
+// a 40px quiet zone, so the real data grid is exactly 41x41 modules.
+const QR_IMAGE_SIZE = 900;
+const QR_MODULE_PX = 20;
+const QR_MARGIN_PX = 40;
+const QR_GRID = 41;
+const QR_SUPER = 2;
+const QR_WORLD_SIZE = 5;
+const QR_CX = 3.3;
+const V_CX = -3.3;
 
 function glowTexture(THREE: typeof import("three")) {
   const size = 64;
@@ -30,52 +39,79 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+function frustumSize(fovDeg: number, aspect: number, distance: number) {
+  const height = 2 * Math.tan((fovDeg * Math.PI) / 360) * distance;
+  return { width: height * aspect, height };
+}
+
+// Scatter a start position across the ENTIRE visible screen at a random depth,
+// so particles fly in from every edge instead of a small cluster near center.
+function screenStart(fovDeg: number, aspect: number, cameraZ: number): [number, number, number] {
+  const depth = -6 + Math.random() * 11;
+  const { width, height } = frustumSize(fovDeg, aspect, cameraZ - depth);
+  return [(Math.random() - 0.5) * width, (Math.random() - 0.5) * height, depth];
+}
+
 // Sample points along the two strokes of a V, centered on the left half of the scene.
 function vTargets(count: number): [number, number, number][] {
   const points: [number, number, number][] = [];
   const strokeWidth = 0.24;
-  const cx = -3.1;
+  const cx = V_CX;
   const left = count >> 1, right = count - left;
   for (let i = 0; i < left; i++) {
     const t = i / (left - 1);
-    const x = cx - 2.1 + t * 2.1, y = 2.7 - t * 5.3;
+    const x = cx - 2.2 + t * 2.2, y = 2.75 - t * 5.5;
     const jitter = (Math.random() - 0.5) * strokeWidth;
     points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5]);
   }
   for (let i = 0; i < right; i++) {
     const t = i / (right - 1);
-    const x = cx + t * 2.1, y = -2.6 + t * 5.3;
+    const x = cx + t * 2.2, y = -2.65 + t * 5.5;
     const jitter = (Math.random() - 0.5) * strokeWidth;
     points.push([x + jitter * 0.6, y + jitter, (Math.random() - 0.5) * 0.5]);
   }
   return points;
 }
 
-// Sample the dark pixels of the real QR code image, positioned on the right half of the scene.
-function qrTargets(image: HTMLImageElement, count: number): [number, number, number][] {
-  const size = 150;
+// Read the real QR image down to its exact 41x41 module grid (sampling the
+// center pixel of each module, no smoothing) so the shape we hand to the
+// particles matches the actual scannable code rather than a blurry photo of it.
+function readQrModules(image: HTMLImageElement): boolean[][] {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
+  canvas.width = canvas.height = QR_IMAGE_SIZE;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(image, 0, 0, size, size);
-  const data = ctx.getImageData(0, 0, size, size).data;
-  const dark: [number, number][] = [];
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const i = (y * size + x) * 4;
-      const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      if (lum < 130) dark.push([x, y]);
+  ctx.drawImage(image, 0, 0, QR_IMAGE_SIZE, QR_IMAGE_SIZE);
+  const data = ctx.getImageData(0, 0, QR_IMAGE_SIZE, QR_IMAGE_SIZE).data;
+  const modules: boolean[][] = [];
+  for (let row = 0; row < QR_GRID; row++) {
+    const line: boolean[] = [];
+    for (let col = 0; col < QR_GRID; col++) {
+      const px = Math.round(QR_MARGIN_PX + col * QR_MODULE_PX + QR_MODULE_PX / 2);
+      const py = Math.round(QR_MARGIN_PX + row * QR_MODULE_PX + QR_MODULE_PX / 2);
+      const i = (py * QR_IMAGE_SIZE + px) * 4;
+      line.push((data[i] + data[i + 1] + data[i + 2]) / 3 < 128);
     }
+    modules.push(line);
   }
-  if (!dark.length) return [];
-  const cx = 3.0, scale = 4.6 / size;
+  return modules;
+}
+
+// Supersample the module grid 2x per axis and drop one uniformly-sized square
+// per "on" cell. Because every cell (inside a module or across a module
+// boundary) is the same size and spacing, dark cells tile together into
+// solid, gap-free squares -- the same geometry a real QR reader expects.
+function qrTargets(modules: boolean[][]): [number, number, number][] {
+  const cell = QR_WORLD_SIZE / QR_GRID / QR_SUPER;
+  const half = QR_WORLD_SIZE / 2;
   const points: [number, number, number][] = [];
-  for (let i = 0; i < count; i++) {
-    const [px, py] = dark[Math.floor((i / count) * dark.length) % dark.length];
-    const jitter = (Math.random() - 0.5) * scale * 0.9;
-    const x = cx + (px - size / 2) * scale + jitter;
-    const y = -(py - size / 2) * scale + jitter;
-    points.push([x, y, (Math.random() - 0.5) * 0.35]);
+  for (let row = 0; row < QR_GRID * QR_SUPER; row++) {
+    const moduleRow = Math.floor(row / QR_SUPER);
+    for (let col = 0; col < QR_GRID * QR_SUPER; col++) {
+      if (!modules[moduleRow][Math.floor(col / QR_SUPER)]) continue;
+      const x = QR_CX - half + (col + 0.5) * cell;
+      const y = half - (row + 0.5) * cell;
+      points.push([x, y, 0]);
+    }
   }
   return points;
 }
@@ -106,61 +142,10 @@ export default function ParticleV() {
       el.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-      camera.position.set(0, 0, 11.5);
+      const fov = 46;
+      const camera = new THREE.PerspectiveCamera(fov, 1, 0.1, 100);
+      camera.position.set(0, 0, 12);
 
-      const vPoints = vTargets(V_COUNT);
-      const qrPoints = qrImage ? qrTargets(qrImage, QR_COUNT) : [];
-      const targets = [...vPoints, ...qrPoints];
-      const count = targets.length;
-      const positions = new Float32Array(count * 3);
-      const starts = new Float32Array(count * 3);
-      const targetArr = new Float32Array(count * 3);
-      const delays = new Float32Array(count);
-      const durations = new Float32Array(count);
-      const phases = new Float32Array(count * 3);
-      const colors = new Float32Array(count * 3);
-      const vColor = new THREE.Color(0xd8ff3e), qrColor = new THREE.Color(0x8ff0ff);
-      for (let i = 0; i < count; i++) {
-        const radius = 7 + Math.random() * 6;
-        const theta = Math.random() * Math.PI * 2, phi = Math.acos(Math.random() * 2 - 1);
-        starts[i * 3] = Math.sin(phi) * Math.cos(theta) * radius;
-        starts[i * 3 + 1] = Math.cos(phi) * radius;
-        starts[i * 3 + 2] = Math.sin(phi) * Math.sin(theta) * radius - 2;
-        const [tx, ty, tz] = targets[i];
-        targetArr[i * 3] = tx; targetArr[i * 3 + 1] = ty; targetArr[i * 3 + 2] = tz;
-        positions[i * 3] = starts[i * 3]; positions[i * 3 + 1] = starts[i * 3 + 1]; positions[i * 3 + 2] = starts[i * 3 + 2];
-        delays[i] = Math.random() * 1.5;
-        durations[i] = 1.8 + Math.random() * 1.3;
-        phases[i * 3] = Math.random() * Math.PI * 2;
-        phases[i * 3 + 1] = Math.random() * Math.PI * 2;
-        phases[i * 3 + 2] = Math.random() * Math.PI * 2;
-        const c = i < vPoints.length ? vColor : qrColor;
-        colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
-      }
-      const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-      const glow = glowTexture(THREE);
-      const material = new THREE.PointsMaterial({ size: 0.1, map: glow, vertexColors: true, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
-      const points = new THREE.Points(geometry, material);
-      scene.add(points);
-
-      const ambientCount = 320;
-      const ambientGeometry = new THREE.BufferGeometry();
-      const ambientArray = new Float32Array(ambientCount * 3);
-      for (let i = 0; i < ambientCount; i++) {
-        ambientArray[i * 3] = (Math.random() - 0.5) * 24;
-        ambientArray[i * 3 + 1] = (Math.random() - 0.5) * 15;
-        ambientArray[i * 3 + 2] = (Math.random() - 0.5) * 12 - 3;
-      }
-      ambientGeometry.setAttribute("position", new THREE.BufferAttribute(ambientArray, 3));
-      const ambient = new THREE.Points(ambientGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.03, transparent: true, opacity: 0.2 }));
-      scene.add(ambient);
-
-      let mx = 0, my = 0, raf = 0;
-      const pointer = (event: PointerEvent) => { mx = event.clientX / innerWidth - 0.5; my = event.clientY / innerHeight - 0.5; };
-      addEventListener("pointermove", pointer);
       const resize = () => {
         const width = el.clientWidth, height = el.clientHeight;
         renderer.setSize(width, height, false);
@@ -171,6 +156,96 @@ export default function ParticleV() {
       observer.observe(el);
       resize();
 
+      // ---- V: a soft glowing swarm, stays lively and drifting forever ----
+      const vTarget = vTargets(V_COUNT);
+      const vCount = vTarget.length;
+      const vPositions = new Float32Array(vCount * 3);
+      const vStarts = new Float32Array(vCount * 3);
+      const vTargetArr = new Float32Array(vCount * 3);
+      const vDelays = new Float32Array(vCount);
+      const vDurations = new Float32Array(vCount);
+      const vPhases = new Float32Array(vCount * 3);
+      for (let i = 0; i < vCount; i++) {
+        const [sx, sy, sz] = screenStart(fov, camera.aspect, camera.position.z);
+        vStarts[i * 3] = sx; vStarts[i * 3 + 1] = sy; vStarts[i * 3 + 2] = sz;
+        const [tx, ty, tz] = vTarget[i];
+        vTargetArr[i * 3] = tx; vTargetArr[i * 3 + 1] = ty; vTargetArr[i * 3 + 2] = tz;
+        vPositions[i * 3] = sx; vPositions[i * 3 + 1] = sy; vPositions[i * 3 + 2] = sz;
+        vDelays[i] = Math.random() * 1.4;
+        vDurations[i] = 1.9 + Math.random() * 1.3;
+        vPhases[i * 3] = Math.random() * Math.PI * 2;
+        vPhases[i * 3 + 1] = Math.random() * Math.PI * 2;
+        vPhases[i * 3 + 2] = Math.random() * Math.PI * 2;
+      }
+      const vGeometry = new THREE.BufferGeometry();
+      vGeometry.setAttribute("position", new THREE.BufferAttribute(vPositions, 3));
+      const glow = glowTexture(THREE);
+      const vMaterial = new THREE.PointsMaterial({ size: 0.105, map: glow, color: 0xd8ff3e, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
+      const vPoints = new THREE.Points(vGeometry, vMaterial);
+      scene.add(vPoints);
+
+      // ---- QR: precise squares that fly in bright, then lock to a crisp dark grid ----
+      const qrModules = qrImage ? readQrModules(qrImage) : null;
+      const qrTarget = qrModules ? qrTargets(qrModules) : [];
+      const qrCount = qrTarget.length;
+      const qrPositions = new Float32Array(qrCount * 3);
+      const qrStarts = new Float32Array(qrCount * 3);
+      const qrTargetArr = new Float32Array(qrCount * 3);
+      const qrDelays = new Float32Array(qrCount);
+      const qrDurations = new Float32Array(qrCount);
+      const qrColors = new Float32Array(qrCount * 3);
+      let qrMaxSettle = 0;
+      for (let i = 0; i < qrCount; i++) {
+        const [sx, sy, sz] = screenStart(fov, camera.aspect, camera.position.z);
+        qrStarts[i * 3] = sx; qrStarts[i * 3 + 1] = sy; qrStarts[i * 3 + 2] = sz;
+        const [tx, ty, tz] = qrTarget[i];
+        qrTargetArr[i * 3] = tx; qrTargetArr[i * 3 + 1] = ty; qrTargetArr[i * 3 + 2] = tz;
+        qrPositions[i * 3] = sx; qrPositions[i * 3 + 1] = sy; qrPositions[i * 3 + 2] = sz;
+        qrDelays[i] = Math.random() * 1.1;
+        qrDurations[i] = 1.6 + Math.random() * 1.2;
+        qrMaxSettle = Math.max(qrMaxSettle, qrDelays[i] + qrDurations[i]);
+      }
+      const qrGeometry = new THREE.BufferGeometry();
+      qrGeometry.setAttribute("position", new THREE.BufferAttribute(qrPositions, 3));
+      qrGeometry.setAttribute("color", new THREE.BufferAttribute(qrColors, 3));
+      const qrCell = QR_WORLD_SIZE / QR_GRID / QR_SUPER;
+      const qrMaterial = new THREE.PointsMaterial({ size: qrCell * 1.24, vertexColors: true, sizeAttenuation: true });
+      const qrPoints = new THREE.Points(qrGeometry, qrMaterial);
+      scene.add(qrPoints);
+      const qrBright = new THREE.Color(0x8ff0ff), qrDark = new THREE.Color(0x0a0b0d), qrTmp = new THREE.Color();
+
+      // A light backing plate (with a real quiet zone) so the settled dark
+      // squares read as an actual scannable QR code, not glowing dots on black.
+      const plateSize = QR_WORLD_SIZE + 1.0;
+      const plateGeometry = new THREE.PlaneGeometry(plateSize, plateSize);
+      const plateMaterial = new THREE.MeshBasicMaterial({ color: 0xf3f4ee, transparent: true, opacity: 0 });
+      const plate = new THREE.Mesh(plateGeometry, plateMaterial);
+      plate.position.set(QR_CX, 0, -0.05);
+      scene.add(plate);
+      const haloTexture = glowTexture(THREE);
+      const haloMaterial = new THREE.SpriteMaterial({ map: haloTexture, color: 0x8ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+      const halo = new THREE.Sprite(haloMaterial);
+      halo.scale.set(plateSize * 1.7, plateSize * 1.7, 1);
+      halo.position.set(QR_CX, 0, -0.12);
+      scene.add(halo);
+
+      const ambientCount = 420;
+      const ambientGeometry = new THREE.BufferGeometry();
+      const ambientArray = new Float32Array(ambientCount * 3);
+      const { width: ambientW, height: ambientH } = frustumSize(fov, camera.aspect || 1, camera.position.z + 5);
+      for (let i = 0; i < ambientCount; i++) {
+        ambientArray[i * 3] = (Math.random() - 0.5) * Math.max(ambientW, 20);
+        ambientArray[i * 3 + 1] = (Math.random() - 0.5) * Math.max(ambientH, 12);
+        ambientArray[i * 3 + 2] = (Math.random() - 0.5) * 14 - 3;
+      }
+      ambientGeometry.setAttribute("position", new THREE.BufferAttribute(ambientArray, 3));
+      const ambient = new THREE.Points(ambientGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.03, transparent: true, opacity: 0.2 }));
+      scene.add(ambient);
+
+      let mx = 0, my = 0, raf = 0;
+      const pointer = (event: PointerEvent) => { mx = event.clientX / innerWidth - 0.5; my = event.clientY / innerHeight - 0.5; };
+      addEventListener("pointermove", pointer);
+
       const clock = new THREE.Clock();
       const startTime = clock.getElapsedTime();
 
@@ -178,27 +253,47 @@ export default function ParticleV() {
         const time = clock.getElapsedTime();
         const age = time - startTime;
 
-        for (let i = 0; i < count; i++) {
-          const elapsed = age - delays[i];
-          const t = Math.max(0, Math.min(1, elapsed / durations[i]));
+        for (let i = 0; i < vCount; i++) {
+          const elapsed = age - vDelays[i];
+          const t = Math.max(0, Math.min(1, elapsed / vDurations[i]));
           const eased = easeOutCubic(t);
           const ox = i * 3, oy = i * 3 + 1, oz = i * 3 + 2;
-          let x = starts[ox] + (targetArr[ox] - starts[ox]) * eased;
-          let y = starts[oy] + (targetArr[oy] - starts[oy]) * eased;
-          let z = starts[oz] + (targetArr[oz] - starts[oz]) * eased;
+          let x = vStarts[ox] + (vTargetArr[ox] - vStarts[ox]) * eased;
+          let y = vStarts[oy] + (vTargetArr[oy] - vStarts[oy]) * eased;
+          let z = vStarts[oz] + (vTargetArr[oz] - vStarts[oz]) * eased;
           if (t >= 1) {
-            x += Math.sin(time * 1.1 + phases[ox]) * 0.026;
-            y += Math.sin(time * 0.9 + phases[oy]) * 0.026;
-            z += Math.sin(time * 1.3 + phases[oz]) * 0.045;
+            x += Math.sin(time * 1.1 + vPhases[ox]) * 0.026;
+            y += Math.sin(time * 0.9 + vPhases[oy]) * 0.026;
+            z += Math.sin(time * 1.3 + vPhases[oz]) * 0.045;
           }
-          positions[ox] = x; positions[oy] = y; positions[oz] = z;
+          vPositions[ox] = x; vPositions[oy] = y; vPositions[oz] = z;
         }
-        geometry.attributes.position.needsUpdate = true;
+        vGeometry.attributes.position.needsUpdate = true;
 
-        points.rotation.y += (mx * 0.12 - points.rotation.y) * 0.02;
-        points.rotation.x += (my * 0.06 - points.rotation.x) * 0.02;
+        for (let i = 0; i < qrCount; i++) {
+          const elapsed = age - qrDelays[i];
+          const t = Math.max(0, Math.min(1, elapsed / qrDurations[i]));
+          const eased = easeOutCubic(t);
+          const ox = i * 3, oy = i * 3 + 1, oz = i * 3 + 2;
+          qrPositions[ox] = qrStarts[ox] + (qrTargetArr[ox] - qrStarts[ox]) * eased;
+          qrPositions[oy] = qrStarts[oy] + (qrTargetArr[oy] - qrStarts[oy]) * eased;
+          qrPositions[oz] = qrStarts[oz] + (qrTargetArr[oz] - qrStarts[oz]) * eased;
+          qrTmp.copy(qrBright).lerp(qrDark, eased);
+          qrColors[ox] = qrTmp.r; qrColors[oy] = qrTmp.g; qrColors[oz] = qrTmp.b;
+        }
+        if (qrCount) {
+          qrGeometry.attributes.position.needsUpdate = true;
+          qrGeometry.attributes.color.needsUpdate = true;
+          const plateIn = Math.max(0, Math.min(1, (age - qrMaxSettle * 0.55) / (qrMaxSettle * 0.45 + 0.3)));
+          const plateEased = easeOutCubic(plateIn);
+          plateMaterial.opacity = plateEased * 0.97;
+          haloMaterial.opacity = plateEased * 0.3;
+        }
+
+        vPoints.rotation.y += (mx * 0.12 - vPoints.rotation.y) * 0.02;
+        vPoints.rotation.x += (my * 0.06 - vPoints.rotation.x) * 0.02;
         ambient.rotation.y = time * 0.012;
-        material.opacity = 0.85 + Math.sin(time * 1.8) * 0.07;
+        vMaterial.opacity = 0.85 + Math.sin(time * 1.8) * 0.07;
         camera.lookAt(0, 0, 0);
 
         renderer.render(scene, camera);
@@ -211,9 +306,15 @@ export default function ParticleV() {
         removeEventListener("pointermove", pointer);
         observer.disconnect();
         renderer.dispose();
-        geometry.dispose();
-        material.dispose();
+        vGeometry.dispose();
+        vMaterial.dispose();
         glow.dispose();
+        qrGeometry.dispose();
+        qrMaterial.dispose();
+        plateGeometry.dispose();
+        plateMaterial.dispose();
+        haloTexture.dispose();
+        haloMaterial.dispose();
         ambientGeometry.dispose();
         (ambient.material as THREE.Material).dispose();
         if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
