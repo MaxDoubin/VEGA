@@ -82,7 +82,7 @@ function TeamShowcase(){
   useEffect(()=>{const id=window.setInterval(()=>setFocus(value=>(value+1)%team.length),3400);return()=>window.clearInterval(id)},[]);
   const person=team[focus];
   return <div className="team-showcase">
-    <TeamConstellation team={team}/>
+    <TeamConstellation team={team} focus={focus}/>
     <article key={person.name} className="team-bio-card"><div><span>NOW SPOTLIGHTING</span><b>{person.name}</b></div><strong>{person.strength}</strong><p>{person.experience}</p><small>{person.impact}</small><em>{String(focus+1).padStart(2,"0")} / 05</em></article>
   </div>
 }
@@ -295,15 +295,7 @@ function Visual({type}:{type:Visual}){
   if(type==="district")return <DistrictDemo/>;
   if(type==="privacy")return <PrivacyDemo/>;
   if(type==="team")return <TeamShowcase/>;
-  return <div className="closing-visual">
-    <ParticleV/>
-    <div className="roadmap">
-      <div><i>01</i><b>NOW</b><span>Working prototype</span></div>
-      <div><i>02</i><b>PILOT</b><span>One CCSD classroom</span></div>
-      <div><i>03</i><b>MEASURE</b><span>Safety · time saved · learning</span></div>
-      <div><i>04</i><b>SCALE</b><span>More schools, same guardrails</span></div>
-    </div>
-  </div>;
+  return <div className="closing-visual"><ParticleV/></div>;
 }
 
 export default function Home(){
@@ -338,13 +330,13 @@ export default function Home(){
     return()=>{cancelAnimationFrame(raf);video.removeEventListener("loadedmetadata",onMeta);video.playbackRate=1};
   },[intro]);
 
-  useEffect(()=>{const key=(event:KeyboardEvent)=>{if(intro==="ready"&&event.key==="Enter"){event.preventDefault();startPresentation();return}if(intro==="hold"&&["Enter"," ","ArrowRight","ArrowDown","PageDown"].includes(event.key)){event.preventDefault();finishIntro();return}if(!started)return;if(["ArrowRight","ArrowDown","PageDown"," "].includes(event.key)){event.preventDefault();go(active+1)}if(["ArrowLeft","ArrowUp","PageUp"].includes(event.key))go(active-1);if(event.key.toLowerCase()==="n")setNotes(value=>!value);if(event.key.toLowerCase()==="f")document.documentElement.requestFullscreen?.();if(event.key.toLowerCase()==="r"){setRemaining(duration);setActive(0);setPlaying(false);setStarted(false);setIntro("ready")}};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[active,finishIntro,go,intro,started,startPresentation]);
+  useEffect(()=>{const key=(event:KeyboardEvent)=>{const target=event.target as HTMLElement|null;if(target&&(target.tagName==="INPUT"||target.tagName==="TEXTAREA"||target.isContentEditable))return;if(intro==="ready"&&event.key==="Enter"){event.preventDefault();startPresentation();return}if(intro==="hold"&&["Enter"," ","ArrowRight","ArrowDown","PageDown"].includes(event.key)){event.preventDefault();finishIntro();return}if(!started)return;if(["ArrowRight","ArrowDown","PageDown"," "].includes(event.key)){event.preventDefault();go(active+1)}if(["ArrowLeft","ArrowUp","PageUp"].includes(event.key))go(active-1);if(event.key.toLowerCase()==="n")setNotes(value=>!value);if(event.key.toLowerCase()==="f")document.documentElement.requestFullscreen?.();if(event.key.toLowerCase()==="r"){setRemaining(duration);setActive(0);setPlaying(false);setStarted(false);setIntro("ready")}};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[active,finishIntro,go,intro,started,startPresentation]);
   return <main className={`deck tone-${slide.tone}`} onTouchStart={event=>touchStart.current=event.touches[0].clientX} onTouchEnd={event=>{const distance=event.changedTouches[0].clientX-touchStart.current;if(Math.abs(distance)>55)go(active+(distance<0?1:-1))}}>
     <DeckScene slide={active+1}/><div className="deck-noise"/>
     <header className="deck-topbar"><span className="deck-wordmark">VEGA <i>CCSD LOCAL AI</i></span><div className="single-mode"><b>{started?"LIVE":"READY"}</b><span>5 MINUTE PRESENTATION</span></div><div className="deck-actions"><Link href="/prototype">EXPLORE FULL PROTOTYPE ↗</Link><button onClick={()=>document.documentElement.requestFullscreen?.()} aria-label="Enter fullscreen">⛶</button></div></header>
     <section key={active} className={`deck-slide slide-${active+1}`} onClick={event=>{const target=event.target as HTMLElement;if(!target.closest("a,button,input,.speaker-note,.live-demo"))go(active+1)}}>
       <div className="slide-photo"><img src={slide.photo} alt=""/><i/><small>{slide.credit}</small></div>
-      <div className="slide-copy"><div className="chapter-label">{slide.chapter}</div><div className="slide-meta"><span>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span><b>{slide.speaker}</b></div><h1>{slide.title}</h1><div className="slide-body">{slide.body}</div></div>
+      <div className="slide-copy"><div className="slide-meta"><span>{String(active+1).padStart(2,"0")} / {String(slides.length).padStart(2,"0")}</span><b>{slide.speaker}</b></div><h1>{slide.title}</h1><div className="slide-body">{slide.body}</div></div>
       <div className="slide-graphic"><Visual type={slide.visual}/></div>
       {notes&&<aside className="speaker-note"><div><span>{slide.speaker}</span><b>FULL SCRIPT</b></div><p>{slide.script}</p></aside>}
     </section>
