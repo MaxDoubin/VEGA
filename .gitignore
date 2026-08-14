@@ -35,6 +35,10 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
+
+# vinext dev cache
+/.vinext/
 /dist/
 /.wrangler/
 /.sites-runtime/

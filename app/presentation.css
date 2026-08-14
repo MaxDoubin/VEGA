@@ -56,7 +56,7 @@ body:has(.deck){overflow:hidden;background:#050506}
 .slide-graphic{position:relative;z-index:4;min-height:52vh;display:grid;place-items:center;animation:visualSettle .68s cubic-bezier(.22,1,.36,1) .04s both}
 
 .slide-photo{position:absolute;z-index:0;inset:0;overflow:hidden}
-.slide-photo img{position:absolute;right:0;width:68%;height:100%;object-fit:cover;object-position:center;animation:photoSettle 8s cubic-bezier(.22,1,.36,1) both}
+.slide-photo img,.slide-photo video{position:absolute;right:0;width:68%;height:100%;object-fit:cover;object-position:center;animation:photoSettle 8s cubic-bezier(.22,1,.36,1) both}
 .slide-photo>i{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0 33%,color-mix(in srgb,var(--bg) 90%,transparent) 43%,color-mix(in srgb,var(--bg) 22%,transparent) 100%),linear-gradient(0deg,#0009,transparent 48%)}
 .slide-photo small{position:absolute;z-index:2;right:3vw;bottom:2.2vh;color:#fff9;font:700 6px var(--font-geist-mono),monospace;letter-spacing:.12em}
 .deck-slide:has(.slide-photo) .slide-copy{text-shadow:0 3px 30px #0004}
@@ -210,8 +210,11 @@ body:has(.deck){overflow:hidden;background:#050506}
 .timed-caption b{margin-top:4px;font-size:12px;letter-spacing:-.01em}
 .timed-caption>em{color:#6f726c;font:800 7px var(--font-geist-mono),monospace;font-style:normal}
 
-/* ===== Team constellation (slide 6) ===== */
-.team-showcase{position:relative;width:min(900px,100%);height:min(620px,70vh)}
+/* ===== Team constellation, full-bleed across the entire slide (slide 6) ===== */
+.slide-6 .slide-graphic{position:absolute;inset:0;z-index:1;min-height:auto;padding:0;animation:none}
+.slide-6 .slide-photo img{filter:grayscale(.55) brightness(.5) contrast(1.05)}
+.slide-6 .slide-photo>i{background:linear-gradient(90deg,var(--bg) 0 42%,color-mix(in srgb,var(--bg) 88%,transparent) 60%,color-mix(in srgb,var(--bg) 62%,transparent) 100%),linear-gradient(0deg,#000c,transparent 60%)}
+.team-showcase{position:absolute;inset:0;width:100%;height:100%}
 .team-constellation{position:absolute;inset:0}
 .constellation-canvas{position:absolute;inset:0}
 .constellation-canvas canvas{width:100%;height:100%;display:block}
@@ -223,8 +226,8 @@ body:has(.deck){overflow:hidden;background:#050506}
 .team-constellation.static{position:static;display:flex;flex-wrap:wrap;justify-content:center;gap:14px 22px;padding:26px 6%}
 .team-constellation.static .constellation-label{position:static;opacity:1!important;transform:none!important;padding:10px 16px;border:1px solid #ffffff28;border-radius:12px;background:#0a0b0ee0}
 .team-showcase:has(.team-constellation.static){position:relative;height:auto;display:flex;flex-direction:column;gap:18px}
-.team-showcase:has(.team-constellation.static) .team-bio-card{position:static;width:100%}
-.team-bio-card{position:absolute;left:0;bottom:0;z-index:3;width:min(400px,72%);padding:22px 24px;border:1px solid #ffffff2b;border-radius:17px;background:#0b0d11e8;color:#fff;box-shadow:0 30px 90px #0008;backdrop-filter:blur(10px);animation:spotlightIn .55s cubic-bezier(.22,1,.36,1) both}
+.team-showcase:has(.team-constellation.static) .team-bio-card{position:static;width:100%;transform:none;animation:none;opacity:1}
+.team-bio-card{position:absolute;left:70%;right:auto;bottom:6%;z-index:3;width:min(360px,60%);padding:22px 24px;border:1px solid #ffffff2b;border-radius:17px;background:#0b0d11e8;color:#fff;box-shadow:0 30px 90px #0008;backdrop-filter:blur(10px);animation:spotlightIn .55s cubic-bezier(.22,1,.36,1) both}
 .team-bio-card>div span,.team-bio-card>div b{display:block}
 .team-bio-card>div span{color:var(--accent,#d7ff34);font:850 6px var(--font-geist-mono),monospace;letter-spacing:.15em}
 .team-bio-card>div b{margin-top:7px;font-size:26px;letter-spacing:-.04em}
@@ -233,17 +236,18 @@ body:has(.deck){overflow:hidden;background:#050506}
 .team-bio-card>small{color:#fff;font-size:12px;font-weight:800}
 .team-bio-card>em{position:absolute;right:20px;bottom:16px;color:var(--accent,#d7ff34);font:850 8px var(--font-geist-mono),monospace;font-style:normal;letter-spacing:.12em}
 
-/* ===== Closing particle assembly + roadmap (slide 7) ===== */
-.closing-visual{position:relative;width:min(1100px,100%);height:min(640px,72vh)}
+/* ===== Closing particle assembly, full-bleed across the entire slide (slide 7) ===== */
+.slide-7 .slide-graphic{position:absolute;inset:0;z-index:1;min-height:auto;padding:0;animation:none}
+.closing-visual{position:absolute;inset:0;width:100%;height:100%}
 .particle-v{position:absolute;inset:0;display:grid;place-items:center}
 .particle-v canvas{width:100%;height:100%;display:block}
 .particle-v-static{font-size:min(15vw,180px);font-weight:850;letter-spacing:-.05em;color:var(--accent,#d7ff34);text-shadow:0 0 65px #d7ff346b}
 .slide-7 .slide-body>strong{margin-top:12px;color:var(--accent,#d7ff34);font:800 10px var(--font-geist-mono),monospace;letter-spacing:.15em}
-.try-it-card{margin-top:22px;display:flex;align-items:center;gap:22px;width:max-content;max-width:100%;padding:20px 28px 20px 20px;border:1px solid #ffffff2e;border-radius:18px;background:#0a0b0ee0;backdrop-filter:blur(14px)}
-.try-it-card img{width:148px;height:148px;border-radius:10px;background:#fff;padding:8px}
-.try-it-card div{display:flex;flex-direction:column;gap:7px}
-.try-it-card b{color:#fff;font:850 13px var(--font-geist-mono),monospace;letter-spacing:.13em}
-.try-it-card span{color:#9a9d97;font:750 11px var(--font-geist-mono),monospace;letter-spacing:.02em}
+.questions-line{margin-top:18px;color:#c7c9c3;font:650 15px/1.5 var(--font-geist-sans),sans-serif}
+.qr-caption{position:absolute;right:6%;bottom:9%;z-index:2;display:flex;flex-direction:column;gap:5px;text-align:right;opacity:0;animation:captionIn .8s ease 3.1s both}
+.qr-caption b{color:#fff;font:850 12px var(--font-geist-mono),monospace;letter-spacing:.14em}
+.qr-caption span{color:#9a9d97;font:750 10px var(--font-geist-mono),monospace;letter-spacing:.02em}
+@keyframes captionIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* ===== Speaker notes + footer controls ===== */
 .speaker-note{position:absolute;z-index:45;left:5.8vw;right:5.8vw;bottom:18px;padding:18px 22px;display:grid;grid-template-columns:180px 1fr;gap:24px;background:#090a09f3;color:#fff;border-left:3px solid var(--accent);box-shadow:0 20px 65px #0009;backdrop-filter:blur(20px);animation:noteIn .3s}
@@ -291,7 +295,15 @@ body:has(.deck){overflow:hidden;background:#050506}
 
 /* ===== Cinematic opening ===== */
 .cinematic-intro{position:absolute;z-index:120;inset:0;overflow:hidden;background:#020303;color:#fff;--intro-duration:10s}
-.cinematic-intro.finishing{animation:cinemaOut .68s cubic-bezier(.7,0,.84,0) both}
+.cinematic-intro.finishing{animation:cinemaOut .65s cubic-bezier(.7,0,.84,0) both}
+.cinematic-blackout{position:absolute;z-index:10;inset:0;background:#020303;opacity:0;pointer-events:none}
+.cinematic-intro.finishing .cinematic-blackout{animation:blackoutIn .38s ease forwards}
+
+/* ===== Mid-deck cinematic bridge into the closing slide ===== */
+.closing-transition{position:absolute;z-index:110;inset:0;overflow:hidden;background:#000}
+.closing-transition>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.closing-transition-blackout{position:absolute;z-index:1;inset:0;background:#000;opacity:0;pointer-events:none}
+.closing-transition.fading .closing-transition-blackout{animation:blackoutIn .45s ease forwards}
 .cinematic-intro>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(.82);transform:scale(1.015);animation:cinemaPush var(--intro-duration) linear both}
 .cinematic-shade{position:absolute;inset:0;background:linear-gradient(90deg,#0009,transparent 42%,#0002),linear-gradient(0deg,#000d,transparent 42%,#0003);animation:shadeBuild var(--intro-duration) ease both}
 .cinematic-scan{position:absolute;inset:0;opacity:.25;background:linear-gradient(90deg,transparent 0 22%,#e2ff2414 22.1% 22.25%,transparent 22.35% 76%,#e2ff2412 76.1% 76.2%,transparent 76.3%),linear-gradient(#ffffff05 1px,transparent 1px);background-size:auto,100% 5px;mix-blend-mode:screen}
@@ -335,7 +347,8 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
 /* ===== Misc keyframes ===== */
 @keyframes noteIn{from{opacity:0;transform:translateY(12px)}}
 @keyframes launchIn{from{opacity:0}}
-@keyframes cinemaOut{to{opacity:0;transform:scale(1.012);filter:blur(6px)}}
+@keyframes cinemaOut{to{transform:scale(1.012);filter:blur(6px)}}
+@keyframes blackoutIn{to{opacity:1}}
 @keyframes cinemaPush{from{transform:scale(1.015)}to{transform:scale(1.075)}}
 @keyframes shadeBuild{0%,60%{opacity:.35}100%{opacity:1}}
 @keyframes titleReveal{0%,70%{opacity:0;transform:translateY(25px)}78%{opacity:1;transform:none}100%{opacity:1;transform:none}}
@@ -343,7 +356,7 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
 @keyframes resultPulse{50%{border-color:#d7ff3480;transform:translateY(-2px)}}
 @keyframes flowArrow{50%{transform:translateX(4px);opacity:.5}}
 @keyframes coreBreathe{50%{transform:scale(1.05);box-shadow:0 0 75px #d7ff344f}}
-@keyframes spotlightIn{from{opacity:.25;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes spotlightIn{from{opacity:.25;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes captionIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes thinkPulse{0%,80%,100%{opacity:.3;transform:scale(.85)}40%{opacity:1;transform:scale(1)}}
 
@@ -383,7 +396,7 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
   .deck-slide{inset:58px 0 60px;padding:0;display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;cursor:auto}
 
   .slide-photo{position:relative;inset:auto;z-index:0;width:100%;height:30vh;min-height:200px}
-  .slide-photo img{position:absolute;inset:0;right:auto;width:100%;height:100%;object-fit:cover;animation:none}
+  .slide-photo img,.slide-photo video{position:absolute;inset:0;right:auto;width:100%;height:100%;object-fit:cover;animation:none}
   .slide-photo>i{background:linear-gradient(0deg,var(--bg) 0 6%,transparent 55%)}
   .slide-photo small{left:16px;right:auto;bottom:10px}
 
@@ -418,10 +431,10 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
   .slope-graph{max-width:230px}
   .live-demo-messages{max-height:38vh}
   .team-showcase{width:100%;height:58vh;min-height:380px;transform:none}
-  .team-bio-card{width:88%;left:6%}
-  .closing-visual{width:100%;height:52vh;min-height:340px}
-  .try-it-card{flex-wrap:wrap;justify-content:center;text-align:center}
-  .try-it-card div{align-items:center}
+  .team-bio-card{width:88%;left:50%}
+  .slide-6 .slide-graphic,.slide-7 .slide-graphic{position:relative;inset:auto;z-index:2;width:100%;min-height:auto;padding:4vh 20px 5vh;display:block}
+  .closing-visual{position:relative;width:100%;height:52vh;min-height:340px}
+  .questions-line{text-align:center}
 
   .speaker-note{left:14px;right:14px;bottom:8px;display:block;max-height:45vh;overflow:auto}
   .speaker-note>div{margin-bottom:9px}

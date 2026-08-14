@@ -4,14 +4,16 @@ import { useEffect, useRef, useState } from "react";
 
 type Member = { name: string; strength: string };
 
-const ORBITS = [
-  { radius: 2.35, speed: 0.26, phase: 0.0, tilt: 0.18, height: 0.55 },
-  { radius: 2.85, speed: -0.19, phase: 1.3, tilt: -0.32, height: 0.75 },
-  { radius: 2.05, speed: 0.31, phase: 2.6, tilt: 0.42, height: 0.4 },
-  { radius: 3.15, speed: -0.15, phase: 3.9, tilt: -0.12, height: 0.9 },
-  { radius: 2.6, speed: 0.22, phase: 5.1, tilt: 0.55, height: 0.62 },
+// A hand-authored V -- two arms of two stars each descending to a shared
+// vertex, echoing the VEGA mark -- connected star to star with thin lines,
+// down the left arm and back up the right.
+const STAR_LAYOUT: [number, number, number][] = [
+  [-2.0, 1.85, 0],
+  [-1.05, 0.7, -0.2],
+  [0, -0.45, 0.15],
+  [1.05, 0.7, -0.2],
+  [2.0, 1.85, 0],
 ];
-
 function glowTexture(THREE: typeof import("three")) {
   const size = 128;
   const canvas = document.createElement("canvas");
@@ -23,6 +25,36 @@ function glowTexture(THREE: typeof import("three")) {
   gradient.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
+// A crisp four-point star flare (hot core + thin cross spikes), for a real
+// twinkling-star look instead of a faceted gem or a flat glowing blob.
+function starTexture(THREE: typeof import("three")) {
+  const size = 128, c = size / 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const core = ctx.createRadialGradient(c, c, 0, c, c, size * 0.16);
+  core.addColorStop(0, "rgba(255,255,255,1)");
+  core.addColorStop(0.55, "rgba(255,255,255,.9)");
+  core.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = core;
+  ctx.fillRect(0, 0, size, size);
+  ctx.save();
+  ctx.translate(c, c);
+  for (const angle of [0, Math.PI / 2]) {
+    ctx.rotate(angle === 0 ? 0 : angle);
+    const spike = ctx.createLinearGradient(-c, 0, c, 0);
+    spike.addColorStop(0, "rgba(255,255,255,0)");
+    spike.addColorStop(0.5, "rgba(255,255,255,.75)");
+    spike.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = spike;
+    ctx.fillRect(-c, -size * 0.018, size, size * 0.036);
+  }
+  ctx.restore();
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
   return texture;
@@ -56,54 +88,55 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
       const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
       camera.position.set(0, 0.6, 9.5);
 
-      const glow = glowTexture(THREE);
-      const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xd8ff3e, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
-      coreGlow.scale.setScalar(2.6);
-      scene.add(coreGlow);
-      const core = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.42, 2),
-        new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0xd8ff3e, emissiveIntensity: 0.9, metalness: 0.3, roughness: 0.15, transmission: 0.3, clearcoat: 1, transparent: true, opacity: 0.95 })
-      );
-      scene.add(core);
+      // The canvas spans the full slide, but the left ~40% is reserved for
+      // the title/quote text -- so the whole rig (core + stars + lines) is
+      // offset rightward as one rigid group, clear of both the copy and the
+      // photo's busiest area. The camera stays centered on world origin so
+      // this offset actually reads as a shift on screen.
+      const SCENE_X = 3.3;
+      const rig = new THREE.Group();
+      rig.position.set(SCENE_X, 0.15, 0);
+      scene.add(rig);
 
-      const nodeMaterial = () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0x6bdcff, emissiveIntensity: 0.7, metalness: 0.4, roughness: 0.2, transparent: true, opacity: 0.95 });
-      const nodes: THREE.Mesh[] = [];
+      const glow = glowTexture(THREE);
+      const star = starTexture(THREE);
+
+      const starColor = new THREE.Color(0xfff2d8), starFocusColor = new THREE.Color(0xd8ff3e);
+      const haloColor = new THREE.Color(0xffe6b0), haloFocusColor = new THREE.Color(0xd8ff3e);
+      const nodeCores: THREE.Sprite[] = [];
       const nodeGlows: THREE.Sprite[] = [];
-      const nodeGeometry = new THREE.IcosahedronGeometry(0.16, 1);
-      for (let i = 0; i < ORBITS.length; i++) {
-        const mesh = new THREE.Mesh(nodeGeometry, nodeMaterial());
-        scene.add(mesh);
-        nodes.push(mesh);
-        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0x6bdcff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
-        sprite.scale.setScalar(0.85);
-        scene.add(sprite);
+      const wobblePhase = STAR_LAYOUT.map(() => Math.random() * Math.PI * 2);
+      const twinklePhase = STAR_LAYOUT.map(() => Math.random() * Math.PI * 2);
+      for (let i = 0; i < STAR_LAYOUT.length; i++) {
+        const nodeCore = new THREE.Sprite(new THREE.SpriteMaterial({ map: star, color: starColor.clone(), transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+        nodeCore.scale.setScalar(0.6);
+        rig.add(nodeCore);
+        nodeCores.push(nodeCore);
+        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: haloColor.clone(), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+        sprite.scale.setScalar(0.9);
+        rig.add(sprite);
         nodeGlows.push(sprite);
       }
 
-      const beamPositions = new Float32Array(ORBITS.length * 2 * 3);
-      const beamGeometry = new THREE.BufferGeometry();
-      beamGeometry.setAttribute("position", new THREE.BufferAttribute(beamPositions, 3));
-      const beams = new THREE.LineSegments(beamGeometry, new THREE.LineBasicMaterial({ color: 0xd8ff3e, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending }));
-      scene.add(beams);
+      // Connect the stars star-to-star (a real constellation line), not a
+      // hub-and-spoke wheel back to a center point.
+      const linkPositions = new Float32Array((STAR_LAYOUT.length - 1) * 2 * 3);
+      const linkGeometry = new THREE.BufferGeometry();
+      linkGeometry.setAttribute("position", new THREE.BufferAttribute(linkPositions, 3));
+      const links = new THREE.LineSegments(linkGeometry, new THREE.LineBasicMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending }));
+      rig.add(links);
 
-      const dustCount = 180;
+      const dustCount = 300;
       const dustGeometry = new THREE.BufferGeometry();
       const dustArray = new Float32Array(dustCount * 3);
       for (let i = 0; i < dustCount; i++) {
-        dustArray[i * 3] = (Math.random() - 0.5) * 14;
-        dustArray[i * 3 + 1] = (Math.random() - 0.5) * 9;
-        dustArray[i * 3 + 2] = (Math.random() - 0.5) * 8;
+        dustArray[i * 3] = (Math.random() - 0.5) * 24;
+        dustArray[i * 3 + 1] = (Math.random() - 0.5) * 14;
+        dustArray[i * 3 + 2] = (Math.random() - 0.5) * 10;
       }
       dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustArray, 3));
-      const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.012, transparent: true, opacity: 0.14 }));
+      const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.014, transparent: true, opacity: 0.22 }));
       scene.add(dust);
-
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x1a1235, 2.4));
-      const key = new THREE.PointLight(0xd8ff3e, 30, 22);
-      key.position.set(3, 4, 6);
-      const rim = new THREE.PointLight(0x6bdcff, 26, 20);
-      rim.position.set(-4, -2, 4);
-      scene.add(key, rim);
 
       let mx = 0, my = 0, raf = 0;
       const pointer = (event: PointerEvent) => { mx = event.clientX / innerWidth - 0.5; my = event.clientY / innerHeight - 0.5; };
@@ -121,60 +154,64 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
       const clock = new THREE.Clock();
       const startTime = clock.getElapsedTime();
       const pos = new THREE.Vector3();
-      const focusScale = new Float32Array(ORBITS.length).fill(1);
+      const focusScale = new Float32Array(STAR_LAYOUT.length).fill(1);
       const labelScreen: { sx: number; sy: number; z: number; eased: number; isFocused: boolean }[] =
-        ORBITS.map(() => ({ sx: 0, sy: 0, z: 0, eased: 0, isFocused: false }));
+        STAR_LAYOUT.map(() => ({ sx: 0, sy: 0, z: 0, eased: 0, isFocused: false }));
 
       const tick = () => {
         const time = clock.getElapsedTime();
         const age = time - startTime;
         const focused = focusRef.current;
 
-        core.rotation.x = time * 0.18;
-        core.rotation.y = time * 0.26;
-        const corePulse = 1 + Math.sin(time * 1.6) * 0.08;
-        core.scale.setScalar(corePulse);
-        coreGlow.scale.setScalar(2.6 + Math.sin(time * 1.6) * 0.2);
+        rig.rotation.y += (mx * 0.12 - rig.rotation.y) * 0.02;
+        rig.rotation.x += (my * 0.06 - rig.rotation.x) * 0.02;
+        rig.updateMatrixWorld();
 
-        ORBITS.forEach((orbit, index) => {
+        STAR_LAYOUT.forEach((base, index) => {
           const reveal = Math.max(0, Math.min(1, (age - index * 0.18) / 1.1));
           const eased = reveal * reveal * (3 - 2 * reveal);
-          const angle = orbit.phase + time * orbit.speed;
-          const x = Math.cos(angle) * orbit.radius;
-          const z = Math.sin(angle) * orbit.radius;
-          const y = Math.sin(angle * orbit.tilt * 4 + orbit.phase) * orbit.height;
-          const node = nodes[index], sprite = nodeGlows[index];
-          node.position.set(x, y, z);
+          // A slow, small, per-star drift -- alive without ever reading as
+          // orbiting or bouncing.
+          const x = base[0] + Math.sin(time * 0.24 + wobblePhase[index]) * 0.07;
+          const y = base[1] + Math.cos(time * 0.2 + wobblePhase[index] * 1.7) * 0.05;
+          const z = base[2] + Math.sin(time * 0.28 + wobblePhase[index] * 2.3) * 0.06;
+          const orbCore = nodeCores[index], sprite = nodeGlows[index];
+          orbCore.position.set(x, y, z);
           sprite.position.set(x, y, z);
-          node.rotation.x += 0.01;
-          node.rotation.y += 0.014;
           const isFocused = index === focused;
-          focusScale[index] += ((isFocused ? 2.5 : 1) - focusScale[index]) * 0.06;
+          focusScale[index] += ((isFocused ? 2.3 : 1) - focusScale[index]) * 0.06;
           const focusMul = focusScale[index];
-          const material = node.material as THREE.MeshPhysicalMaterial;
-          material.emissiveIntensity += ((isFocused ? 1.8 : 0.7) - material.emissiveIntensity) * 0.06;
-          const scale = (0.001 + eased * (1 + Math.sin(time * 2 + index) * 0.08)) * focusMul;
-          node.scale.setScalar(scale);
-          sprite.scale.setScalar((0.75 + Math.sin(time * 2.2 + index * 2) * 0.12) * eased * focusMul);
-          (sprite.material as THREE.SpriteMaterial).opacity = (isFocused ? 0.85 : 0.5) * eased;
+          const twinkle = 0.82 + Math.sin(time * 2.6 + twinklePhase[index]) * 0.18;
+          const coreMaterial = orbCore.material as THREE.SpriteMaterial;
+          coreMaterial.color.copy(starColor).lerp(starFocusColor, isFocused ? 0.85 : 0);
+          coreMaterial.opacity = (isFocused ? 1 : 0.8) * twinkle * eased;
+          const scale = (0.001 + eased * 0.6) * focusMul;
+          orbCore.scale.setScalar(scale);
+          const haloMaterial = sprite.material as THREE.SpriteMaterial;
+          haloMaterial.color.copy(haloColor).lerp(haloFocusColor, isFocused ? 0.85 : 0);
+          sprite.scale.setScalar(0.9 * eased * focusMul);
+          haloMaterial.opacity = (isFocused ? 0.85 : 0.4) * eased * twinkle;
 
-          const offset = index * 6;
-          beamPositions[offset] = 0; beamPositions[offset + 1] = 0; beamPositions[offset + 2] = 0;
-          beamPositions[offset + 3] = x; beamPositions[offset + 4] = y; beamPositions[offset + 5] = z;
+          if (index < STAR_LAYOUT.length - 1) {
+            const next = STAR_LAYOUT[index + 1];
+            const offset = index * 6;
+            linkPositions[offset] = x; linkPositions[offset + 1] = y; linkPositions[offset + 2] = z;
+            linkPositions[offset + 3] = next[0]; linkPositions[offset + 4] = next[1]; linkPositions[offset + 5] = next[2];
+          }
 
-          pos.set(x, y, z).project(camera);
+          rig.localToWorld(pos.set(x, y, z)).project(camera);
           labelScreen[index].sx = (pos.x * 0.5 + 0.5) * el.clientWidth;
           labelScreen[index].sy = (-pos.y * 0.5 + 0.5) * el.clientHeight;
           labelScreen[index].z = pos.z;
           labelScreen[index].eased = eased;
           labelScreen[index].isFocused = isFocused;
         });
-        beamGeometry.attributes.position.needsUpdate = true;
+        linkGeometry.attributes.position.needsUpdate = true;
 
         // Nudge labels apart when their projected positions land too close together,
         // pushing along whatever direction actually separates them (run this a few
         // times so three-way clusters settle instead of only resolving one pair).
-        const MIN_LABEL_DIST = 78;
+        const MIN_LABEL_DIST = 96;
         for (let pass = 0; pass < 3; pass++) {
           for (let i = 0; i < labelScreen.length; i++) {
             for (let j = i + 1; j < labelScreen.length; j++) {
@@ -199,13 +236,11 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
           label.style.opacity = String(lp.eased * (lp.z < 1 ? 1 : 0));
           label.classList.toggle("focused", lp.isFocused);
         });
-        (beams.material as THREE.LineBasicMaterial).opacity = 0.16 + Math.sin(time * 1.4) * 0.06;
+        (links.material as THREE.LineBasicMaterial).opacity = 0.22 + Math.sin(time * 1.1) * 0.06;
 
-        scene.rotation.y += (mx * 0.18 - scene.rotation.y) * 0.02;
-        scene.rotation.x += (my * 0.1 - scene.rotation.x) * 0.02;
-        dust.rotation.y = time * 0.02;
-        camera.position.x += (Math.cos(time * 0.06) * 0.6 - camera.position.x) * 0.03;
-        camera.position.y += (0.6 + Math.sin(time * 0.05) * 0.3 - camera.position.y) * 0.03;
+        dust.rotation.y = time * 0.012;
+        camera.position.x += (Math.cos(time * 0.05) * 0.4 - camera.position.x) * 0.03;
+        camera.position.y += (0.6 + Math.sin(time * 0.045) * 0.2 - camera.position.y) * 0.03;
         camera.lookAt(0, 0, 0);
 
         renderer.render(scene, camera);
@@ -218,17 +253,14 @@ export default function TeamConstellation({ team, focus = 0 }: { team: Member[];
         removeEventListener("pointermove", pointer);
         observer.disconnect();
         renderer.dispose();
-        nodeGeometry.dispose();
-        nodes.forEach(n => (n.material as THREE.Material).dispose());
-        nodeGlows.forEach(s => (s.material as THREE.SpriteMaterial).map?.dispose());
-        beamGeometry.dispose();
-        (beams.material as THREE.Material).dispose();
+        star.dispose();
+        glow.dispose();
+        nodeCores.forEach(s => (s.material as THREE.Material).dispose());
+        nodeGlows.forEach(s => (s.material as THREE.Material).dispose());
+        linkGeometry.dispose();
+        (links.material as THREE.Material).dispose();
         dustGeometry.dispose();
         (dust.material as THREE.Material).dispose();
-        core.geometry.dispose();
-        (core.material as THREE.Material).dispose();
-        (coreGlow.material as THREE.SpriteMaterial).dispose();
-        glow.dispose();
         if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
       };
     }).catch(() => {});
