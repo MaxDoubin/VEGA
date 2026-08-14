@@ -4,18 +4,19 @@ import { useEffect, useRef, useState } from "react";
 
 type Member = { name: string; strength: string };
 
-// A hand-authored zigzag arc (a real constellation shape, not a physics
-// simulation) -- connected star to star with thin lines, left to right.
+// A hand-authored V -- two arms of two stars each descending to a shared
+// vertex, echoing the VEGA mark -- connected star to star with thin lines,
+// down the left arm and back up the right.
 const STAR_LAYOUT: [number, number, number][] = [
-  [-2.0, 1.05, 0.1],
-  [-0.95, 1.85, -0.25],
-  [0.3, 0.9, 0.3],
-  [1.55, 1.7, -0.15],
-  [2.35, 0.5, 0.2],
+  [-2.0, 1.85, 0],
+  [-1.05, 0.7, -0.2],
+  [0, -0.45, 0.15],
+  [1.05, 0.7, -0.2],
+  [2.0, 1.85, 0],
 ];
-// Deliberately below the arc, not averaged into it -- so VEGA reads as its
-// own bright anchor point rather than sitting on top of a team member's star.
-const CORE_POS: [number, number, number] = [0.35, -0.45, 0.7];
+// Framed inside the open top of the V rather than sitting on its outline,
+// so VEGA reads as its own bright anchor rather than a sixth point on the V.
+const CORE_POS: [number, number, number] = [0, 1.0, 0.75];
 
 function glowTexture(THREE: typeof import("three")) {
   const size = 128;
