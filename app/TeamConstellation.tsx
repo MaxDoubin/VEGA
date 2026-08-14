@@ -28,10 +28,12 @@ function glowTexture(THREE: typeof import("three")) {
   return texture;
 }
 
-export default function TeamConstellation({ team }: { team: Member[] }) {
+export default function TeamConstellation({ team, focus = 0 }: { team: Member[]; focus?: number }) {
   const host = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [active, setActive] = useState(false);
+  const focusRef = useRef(focus);
+  useEffect(() => { focusRef.current = focus; }, [focus]);
 
   useEffect(() => {
     const el = host.current;
@@ -119,10 +121,14 @@ export default function TeamConstellation({ team }: { team: Member[] }) {
       const clock = new THREE.Clock();
       const startTime = clock.getElapsedTime();
       const pos = new THREE.Vector3();
+      const focusScale = new Float32Array(ORBITS.length).fill(1);
+      const labelScreen: { sx: number; sy: number; z: number; eased: number; isFocused: boolean }[] =
+        ORBITS.map(() => ({ sx: 0, sy: 0, z: 0, eased: 0, isFocused: false }));
 
       const tick = () => {
         const time = clock.getElapsedTime();
         const age = time - startTime;
+        const focused = focusRef.current;
 
         core.rotation.x = time * 0.18;
         core.rotation.y = time * 0.26;
@@ -142,25 +148,57 @@ export default function TeamConstellation({ team }: { team: Member[] }) {
           sprite.position.set(x, y, z);
           node.rotation.x += 0.01;
           node.rotation.y += 0.014;
-          const scale = 0.001 + eased * (1 + Math.sin(time * 2 + index) * 0.08);
+          const isFocused = index === focused;
+          focusScale[index] += ((isFocused ? 2.5 : 1) - focusScale[index]) * 0.06;
+          const focusMul = focusScale[index];
+          const material = node.material as THREE.MeshPhysicalMaterial;
+          material.emissiveIntensity += ((isFocused ? 1.8 : 0.7) - material.emissiveIntensity) * 0.06;
+          const scale = (0.001 + eased * (1 + Math.sin(time * 2 + index) * 0.08)) * focusMul;
           node.scale.setScalar(scale);
-          sprite.scale.setScalar((0.75 + Math.sin(time * 2.2 + index * 2) * 0.12) * eased);
-          (sprite.material as THREE.SpriteMaterial).opacity = 0.5 * eased;
+          sprite.scale.setScalar((0.75 + Math.sin(time * 2.2 + index * 2) * 0.12) * eased * focusMul);
+          (sprite.material as THREE.SpriteMaterial).opacity = (isFocused ? 0.85 : 0.5) * eased;
 
           const offset = index * 6;
           beamPositions[offset] = 0; beamPositions[offset + 1] = 0; beamPositions[offset + 2] = 0;
           beamPositions[offset + 3] = x; beamPositions[offset + 4] = y; beamPositions[offset + 5] = z;
 
-          const label = labelRefs.current[index];
-          if (label) {
-            pos.set(x, y, z).project(camera);
-            const sx = (pos.x * 0.5 + 0.5) * el.clientWidth;
-            const sy = (-pos.y * 0.5 + 0.5) * el.clientHeight;
-            label.style.transform = `translate(-50%,-50%) translate(${sx}px, ${sy}px)`;
-            label.style.opacity = String(eased * (pos.z < 1 ? 1 : 0));
-          }
+          pos.set(x, y, z).project(camera);
+          labelScreen[index].sx = (pos.x * 0.5 + 0.5) * el.clientWidth;
+          labelScreen[index].sy = (-pos.y * 0.5 + 0.5) * el.clientHeight;
+          labelScreen[index].z = pos.z;
+          labelScreen[index].eased = eased;
+          labelScreen[index].isFocused = isFocused;
         });
         beamGeometry.attributes.position.needsUpdate = true;
+
+        // Nudge labels apart when their projected positions land too close together,
+        // pushing along whatever direction actually separates them (run this a few
+        // times so three-way clusters settle instead of only resolving one pair).
+        const MIN_LABEL_DIST = 78;
+        for (let pass = 0; pass < 3; pass++) {
+          for (let i = 0; i < labelScreen.length; i++) {
+            for (let j = i + 1; j < labelScreen.length; j++) {
+              const a = labelScreen[i], b = labelScreen[j];
+              const dx = a.sx - b.sx, dy = a.sy - b.sy;
+              let dist = Math.hypot(dx, dy);
+              if (dist >= MIN_LABEL_DIST) continue;
+              let nx: number, ny: number;
+              if (dist > 0.5) { nx = dx / dist; ny = dy / dist; }
+              else { nx = 0; ny = 1; dist = 0; }
+              const push = (MIN_LABEL_DIST - dist) / 2;
+              if (a.isFocused) { b.sx -= nx * push * 2; b.sy -= ny * push * 2; }
+              else if (b.isFocused) { a.sx += nx * push * 2; a.sy += ny * push * 2; }
+              else { a.sx += nx * push; a.sy += ny * push; b.sx -= nx * push; b.sy -= ny * push; }
+            }
+          }
+        }
+        labelScreen.forEach((lp, index) => {
+          const label = labelRefs.current[index];
+          if (!label) return;
+          label.style.transform = `translate(-50%,-50%) translate(${lp.sx}px, ${lp.sy}px) scale(${0.9 + focusScale[index] * 0.1})`;
+          label.style.opacity = String(lp.eased * (lp.z < 1 ? 1 : 0));
+          label.classList.toggle("focused", lp.isFocused);
+        });
         (beams.material as THREE.LineBasicMaterial).opacity = 0.16 + Math.sin(time * 1.4) * 0.06;
 
         scene.rotation.y += (mx * 0.18 - scene.rotation.y) * 0.02;
