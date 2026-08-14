@@ -4,6 +4,8 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import DeckScene from "./DeckScene";
+import TeamConstellation from "./TeamConstellation";
+import ParticleV from "./ParticleV";
 import { answer, type Source } from "./lib/demoEngine";
 import "./presentation.css";
 
@@ -75,13 +77,13 @@ function TimedCaption({steps,pace=2200}:{steps:string[];pace?:number}){
   return <div className="timed-caption" key={`${step}-${steps[step]}`}><i>{String(step+1).padStart(2,"0")}</i><span><small>WHAT IS HAPPENING</small><b>{steps[step]}</b></span><em>{String(steps.length).padStart(2,"0")}</em></div>
 }
 
-function TeamSpotlight(){
+function TeamShowcase(){
   const [focus,setFocus]=useState(0);
-  useEffect(()=>{const id=window.setInterval(()=>setFocus(value=>(value+1)%team.length),3000);return()=>window.clearInterval(id)},[]);
+  useEffect(()=>{const id=window.setInterval(()=>setFocus(value=>(value+1)%team.length),3400);return()=>window.clearInterval(id)},[]);
   const person=team[focus];
-  return <div className="team-spotlight">
-    <div className="team-cards">{team.map((member,index)=><button key={member.name} className={index===focus?"active":""} onClick={event=>{event.stopPropagation();setFocus(index)}}><i>0{index+1}</i><b>{member.name}</b><span>{member.strength}</span></button>)}</div>
-    <article key={person.name}><div><span>NOW SPOTLIGHTING</span><b>{person.name}</b></div><strong>{person.strength}</strong><p>{person.experience}</p><small>{person.impact}</small><em>{String(focus+1).padStart(2,"0")} / 05</em></article>
+  return <div className="team-showcase">
+    <TeamConstellation team={team}/>
+    <article key={person.name} className="team-bio-card"><div><span>NOW SPOTLIGHTING</span><b>{person.name}</b></div><strong>{person.strength}</strong><p>{person.experience}</p><small>{person.impact}</small><em>{String(focus+1).padStart(2,"0")} / 05</em></article>
   </div>
 }
 
@@ -292,8 +294,16 @@ function Visual({type}:{type:Visual}){
   if(type==="environment")return <div className="visual-stack"><EnvironmentEvidence/><TimedCaption steps={["The local environment defines the requirement","Fans carry heat away from the hardware","No onsite water evaporates"]} pace={2200}/></div>;
   if(type==="district")return <DistrictDemo/>;
   if(type==="privacy")return <PrivacyDemo/>;
-  if(type==="team")return <TeamSpotlight/>;
-  return <div className="closing-visual"><div className="future-v">V</div><span/><span/><span/><p>OUR AI <i>·</i> OUR SCHOOLS <i>·</i> OUR FUTURE</p></div>;
+  if(type==="team")return <TeamShowcase/>;
+  return <div className="closing-visual">
+    <ParticleV/>
+    <div className="roadmap">
+      <div><i>01</i><b>NOW</b><span>Working prototype</span></div>
+      <div><i>02</i><b>PILOT</b><span>One CCSD classroom</span></div>
+      <div><i>03</i><b>MEASURE</b><span>Safety · time saved · learning</span></div>
+      <div><i>04</i><b>SCALE</b><span>More schools, same guardrails</span></div>
+    </div>
+  </div>;
 }
 
 export default function Home(){
