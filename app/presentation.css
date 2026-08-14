@@ -184,19 +184,29 @@ body:has(.deck){overflow:hidden;background:#050506}
 .district-result>div{display:flex;gap:6px}
 .district-result>div span{padding:5px 7px;border:1px solid #ffffff1e;border-radius:99px;color:#aeb1ab;font:750 6px var(--font-geist-mono),monospace}
 .district-flow{display:flex;align-items:center;justify-content:center;gap:13px;margin:15px 0}
-.district-flow span{color:#fff;font:850 7px var(--font-geist-mono),monospace;letter-spacing:.13em}
-.district-flow i{color:var(--accent,#d7ff34);font-style:normal;animation:flowArrow 1.4s ease-in-out infinite}
+.district-flow span{color:#6d6f68;font:850 7px var(--font-geist-mono),monospace;letter-spacing:.13em;transition:color .35s ease}
+.district-flow span.active{color:var(--accent,#d7ff34)}
+.district-flow span.done{color:#fff}
+.district-flow i{display:inline-block;color:#3c3e39;font-style:normal;transition:color .35s ease}
+.district-flow i.done{color:#fff}
+.district-flow i.pulse{color:var(--accent,#d7ff34);animation:flowArrow 1.4s ease-in-out infinite}
 .district-demo>footer,.privacy-demo>footer{height:42px;padding:0 18px;display:flex;align-items:center;gap:10px;border-top:1px solid #ffffff14;background:#090a0c}
 .district-demo>footer b,.privacy-demo>footer b{color:var(--accent,#d7ff34);font:850 7px var(--font-geist-mono),monospace;letter-spacing:.12em}
 .district-demo>footer span,.privacy-demo>footer span{margin-left:auto;color:#70736d;font:750 6px var(--font-geist-mono),monospace;letter-spacing:.1em}
 .privacy-demo{height:360px}
 .privacy-demo>section{height:190px;padding:28px 20px;display:grid;grid-template-columns:1fr 24px 100px 24px 1fr;align-items:center;gap:8px}
-.privacy-demo>section>i{text-align:center;color:var(--accent,#d7ff34);font-style:normal;animation:flowArrow 1.4s ease-in-out infinite}
-.privacy-device,.privacy-answer{padding:17px 13px;border:1px solid #ffffff1e;border-radius:11px;background:#17191d}
+.privacy-demo>section>i{text-align:center;color:#3c3e39;font-style:normal;transition:color .35s ease}
+.privacy-demo>section>i.done{color:#fff}
+.privacy-demo>section>i.pulse{color:var(--accent,#d7ff34);animation:flowArrow 1.4s ease-in-out infinite}
+.privacy-device,.privacy-answer{padding:17px 13px;border:1px solid #ffffff1e;border-radius:11px;background:#17191d;opacity:.55;transition:opacity .35s ease,border-color .35s ease,box-shadow .35s ease}
+.privacy-device.active,.privacy-answer.active{opacity:1;border-color:var(--accent,#d7ff34);box-shadow:0 0 26px #d7ff3426}
+.privacy-device.done{opacity:1}
 .privacy-device small,.privacy-device b,.privacy-answer small,.privacy-answer b{display:block}
 .privacy-device small,.privacy-answer small{color:#777a74;font:800 6px var(--font-geist-mono),monospace;letter-spacing:.1em}
 .privacy-device b,.privacy-answer b{margin-top:8px;font-size:10px}
-.privacy-core{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;align-content:center;background:radial-gradient(circle at 30% 20%,#ddff71,#93b900);color:#10120b;box-shadow:0 0 55px #d7ff3433;animation:coreBreathe 2.4s ease-in-out infinite}
+.privacy-core{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;align-content:center;background:radial-gradient(circle at 30% 20%,#ddff71,#93b900);color:#10120b;box-shadow:0 0 55px #d7ff3433;opacity:.55;transition:opacity .35s ease,box-shadow .35s ease}
+.privacy-core.active{opacity:1;box-shadow:0 0 65px #d7ff3480;animation:coreBreathe 1.1s ease-in-out infinite}
+.privacy-core.done{opacity:1}
 .privacy-core span,.privacy-core small{font:850 5px var(--font-geist-mono),monospace;letter-spacing:.12em}
 .privacy-core b{font-size:17px;margin:3px 0}
 .privacy-bar{margin:0 20px;height:54px;border:1px solid #65e3bd35;border-radius:10px;background:#65e3bd0b;display:grid;grid-template-columns:repeat(3,1fr);align-items:center}
@@ -300,10 +310,11 @@ body:has(.deck){overflow:hidden;background:#050506}
 .cinematic-intro.finishing .cinematic-blackout{animation:blackoutIn .38s ease forwards}
 
 /* ===== Mid-deck cinematic bridge into the closing slide ===== */
-.closing-transition{position:absolute;z-index:110;inset:0;overflow:hidden;background:#000}
+.closing-transition{position:absolute;z-index:110;inset:0;overflow:hidden}
 .closing-transition>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .closing-transition-blackout{position:absolute;z-index:1;inset:0;background:#000;opacity:0;pointer-events:none}
-.closing-transition.fading .closing-transition-blackout{animation:blackoutIn .45s ease forwards}
+.closing-transition.fading .closing-transition-blackout{animation:blackoutIn .42s ease forwards}
+.closing-transition.revealing .closing-transition-blackout{opacity:1;animation:blackoutOut 1s ease forwards}
 .cinematic-intro>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(.82);transform:scale(1.015);animation:cinemaPush var(--intro-duration) linear both}
 .cinematic-shade{position:absolute;inset:0;background:linear-gradient(90deg,#0009,transparent 42%,#0002),linear-gradient(0deg,#000d,transparent 42%,#0003);animation:shadeBuild var(--intro-duration) ease both}
 .cinematic-scan{position:absolute;inset:0;opacity:.25;background:linear-gradient(90deg,transparent 0 22%,#e2ff2414 22.1% 22.25%,transparent 22.35% 76%,#e2ff2412 76.1% 76.2%,transparent 76.3%),linear-gradient(#ffffff05 1px,transparent 1px);background-size:auto,100% 5px;mix-blend-mode:screen}
@@ -349,6 +360,7 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
 @keyframes launchIn{from{opacity:0}}
 @keyframes cinemaOut{to{transform:scale(1.012);filter:blur(6px)}}
 @keyframes blackoutIn{to{opacity:1}}
+@keyframes blackoutOut{from{opacity:1}to{opacity:0}}
 @keyframes cinemaPush{from{transform:scale(1.015)}to{transform:scale(1.075)}}
 @keyframes shadeBuild{0%,60%{opacity:.35}100%{opacity:1}}
 @keyframes titleReveal{0%,70%{opacity:0;transform:translateY(25px)}78%{opacity:1;transform:none}100%{opacity:1;transform:none}}
