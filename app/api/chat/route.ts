@@ -1,4 +1,15 @@
-type ClientMessage = { who?: string; text?: string };
+type ClientMessage = {
+  who?: string;
+  text?: string;
+};
+
+type GroqChatCompletion = {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+};
 
 const districtContext = `Trusted public entry points for this prototype:
 - CCSD home: https://www.ccsd.net/
@@ -12,25 +23,69 @@ const districtContext = `Trusted public entry points for this prototype:
 - Transportation: https://transportation.ccsd.net/
 Never claim access to private student records or that VEGA is an official CCSD product.`;
 
+const groqModel =
+  process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+
 export async function GET() {
-  return Response.json({ connected: Boolean(process.env.OPENAI_API_KEY), provider: process.env.OPENAI_API_KEY ? "OpenAI" : "local-demo" });
+  return Response.json({
+    connected: Boolean(process.env.GROQ_API_KEY),
+    provider: process.env.GROQ_API_KEY ? "Groq" : "local-demo",
+    model: groqModel,
+  });
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return Response.json({ error: "Live model is not configured." }, { status: 503 });
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey) {
+    return Response.json(
+      { error: "Live model is not configured." },
+      { status: 503 }
+    );
+  }
 
   try {
-    const body = await request.json() as { role?: string; mode?: string; messages?: ClientMessage[] };
-    const role = ["Student", "Teacher", "Family", "Staff"].includes(body.role || "") ? body.role : "Student";
-    const mode = ["Tutor", "Plan", "Translate", "Navigate"].includes(body.mode || "") ? body.mode : "Tutor";
-    const messages = (body.messages || []).slice(-10).filter(item => typeof item.text === "string" && item.text.trim()).map(item => ({
-      role: item.who === "vega" ? "assistant" : "user",
-      content: item.text!.slice(0, 4000),
-    }));
-    if (!messages.length) return Response.json({ error: "A message is required." }, { status: 400 });
+    const body = (await request.json()) as {
+      role?: string;
+      mode?: string;
+      messages?: ClientMessage[];
+    };
 
-    const instructions = `You are VEGA, a warm, concise school assistant prototype for Clark County learners. Current audience: ${role}. Current mode: ${mode}.
+    const role = ["Student", "Teacher", "Family", "Staff"].includes(
+      body.role || ""
+    )
+      ? body.role
+      : "Student";
+
+    const mode = ["Tutor", "Plan", "Translate", "Navigate"].includes(
+      body.mode || ""
+    )
+      ? body.mode
+      : "Tutor";
+
+    const messages = (body.messages || [])
+      .slice(-10)
+      .filter(
+        (item) =>
+          typeof item.text === "string" &&
+          item.text.trim()
+      )
+      .map((item) => ({
+        role: item.who === "vega" ? "assistant" : "user",
+        content: item.text!.slice(0, 4000),
+      }));
+
+    if (!messages.length) {
+      return Response.json(
+        { error: "A message is required." },
+        { status: 400 }
+      );
+    }
+
+    const instructions = `You are VEGA, a warm, concise school assistant prototype for Clark County learners.
+
+Current audience: ${role}
+Current mode: ${mode}
 
 Rules:
 1. Protect learning: coach and ask questions; do not complete graded work or enable cheating.
@@ -44,19 +99,69 @@ Rules:
 
 ${districtContext}`;
 
-    const upstream = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: process.env.OPENAI_MODEL || "gpt-5.6", instructions, input: messages, max_output_tokens: 700 }),
-      signal: AbortSignal.timeout(18000),
+    const upstream = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: groqModel,
+          messages: [
+            {
+              role: "system",
+              content: instructions,
+            },
+            ...messages,
+          ],
+          max_tokens: 700,
+        }),
+        signal: AbortSignal.timeout(18000),
+      }
+    );
+
+    if (!upstream.ok) {
+      const errorText = await upstream.text();
+      console.error("Groq API error:", upstream.status, errorText);
+
+      return Response.json(
+        { error: "The live model is temporarily unavailable." },
+        { status: 502 }
+      );
+    }
+
+    const data =
+      (await upstream.json()) as GroqChatCompletion;
+
+    const text =
+      data.choices?.[0]?.message?.content?.trim();
+
+    if (!text) {
+      return Response.json(
+        { error: "The live model returned no text." },
+        { status: 502 }
+      );
+    }
+
+    return Response.json({
+      text,
+      provider: "Groq",
+      model: groqModel,
     });
-    if (!upstream.ok) return Response.json({ error: "The live model is temporarily unavailable." }, { status: 502 });
-    const data = await upstream.json() as { output_text?: string; output?: Array<{ content?: Array<{ type?: string; text?: string }> }> };
-    const text = data.output_text || data.output?.flatMap(item => item.content || []).find(item => item.type === "output_text")?.text;
-    if (!text) return Response.json({ error: "The live model returned no text." }, { status: 502 });
-    return Response.json({ text, provider: "OpenAI", model: process.env.OPENAI_MODEL || "gpt-5.6" });
   } catch (error) {
-    const message = error instanceof Error && error.name === "TimeoutError" ? "The live model timed out." : "The request could not be completed.";
-    return Response.json({ error: message }, { status: 500 });
+    console.error("VEGA chat error:", error);
+
+    const message =
+      error instanceof Error &&
+      error.name === "TimeoutError"
+        ? "The live model timed out."
+        : "The request could not be completed.";
+
+    return Response.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }
