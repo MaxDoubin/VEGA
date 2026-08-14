@@ -122,7 +122,7 @@ function qrTargets(modules: boolean[][], cx: number, worldSize: number): [number
 
 function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
-export default function ParticleV() {
+export default function ParticleV({ startDelay = 0 }: { startDelay?: number }) {
   const host = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
 
@@ -244,7 +244,9 @@ export default function ParticleV() {
       addEventListener("pointermove", pointer);
 
       const clock = new THREE.Clock();
-      const startTime = clock.getElapsedTime();
+      // Held back so the flight-in only begins once the slide itself has
+      // finished fading in from black, instead of racing invisibly behind it.
+      const startTime = clock.getElapsedTime() + startDelay;
 
       const tick = () => {
         const time = clock.getElapsedTime();
