@@ -56,7 +56,7 @@ body:has(.deck){overflow:hidden;background:#050506}
 .slide-graphic{position:relative;z-index:4;min-height:52vh;display:grid;place-items:center;animation:visualSettle .68s cubic-bezier(.22,1,.36,1) .04s both}
 
 .slide-photo{position:absolute;z-index:0;inset:0;overflow:hidden}
-.slide-photo img{position:absolute;right:0;width:68%;height:100%;object-fit:cover;object-position:center;animation:photoSettle 8s cubic-bezier(.22,1,.36,1) both}
+.slide-photo img,.slide-photo video{position:absolute;right:0;width:68%;height:100%;object-fit:cover;object-position:center;animation:photoSettle 8s cubic-bezier(.22,1,.36,1) both}
 .slide-photo>i{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0 33%,color-mix(in srgb,var(--bg) 90%,transparent) 43%,color-mix(in srgb,var(--bg) 22%,transparent) 100%),linear-gradient(0deg,#0009,transparent 48%)}
 .slide-photo small{position:absolute;z-index:2;right:3vw;bottom:2.2vh;color:#fff9;font:700 6px var(--font-geist-mono),monospace;letter-spacing:.12em}
 .deck-slide:has(.slide-photo) .slide-copy{text-shadow:0 3px 30px #0004}
@@ -298,6 +298,12 @@ body:has(.deck){overflow:hidden;background:#050506}
 .cinematic-intro.finishing{animation:cinemaOut .65s cubic-bezier(.7,0,.84,0) both}
 .cinematic-blackout{position:absolute;z-index:10;inset:0;background:#020303;opacity:0;pointer-events:none}
 .cinematic-intro.finishing .cinematic-blackout{animation:blackoutIn .38s ease forwards}
+
+/* ===== Mid-deck cinematic bridge into the closing slide ===== */
+.closing-transition{position:absolute;z-index:110;inset:0;overflow:hidden;background:#000}
+.closing-transition>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.closing-transition-blackout{position:absolute;z-index:1;inset:0;background:#000;opacity:0;pointer-events:none}
+.closing-transition.fading .closing-transition-blackout{animation:blackoutIn .45s ease forwards}
 .cinematic-intro>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(.82);transform:scale(1.015);animation:cinemaPush var(--intro-duration) linear both}
 .cinematic-shade{position:absolute;inset:0;background:linear-gradient(90deg,#0009,transparent 42%,#0002),linear-gradient(0deg,#000d,transparent 42%,#0003);animation:shadeBuild var(--intro-duration) ease both}
 .cinematic-scan{position:absolute;inset:0;opacity:.25;background:linear-gradient(90deg,transparent 0 22%,#e2ff2414 22.1% 22.25%,transparent 22.35% 76%,#e2ff2412 76.1% 76.2%,transparent 76.3%),linear-gradient(#ffffff05 1px,transparent 1px);background-size:auto,100% 5px;mix-blend-mode:screen}
@@ -390,7 +396,7 @@ html[data-slide-direction="back"]::view-transition-new(vega-slide){animation:new
   .deck-slide{inset:58px 0 60px;padding:0;display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;cursor:auto}
 
   .slide-photo{position:relative;inset:auto;z-index:0;width:100%;height:30vh;min-height:200px}
-  .slide-photo img{position:absolute;inset:0;right:auto;width:100%;height:100%;object-fit:cover;animation:none}
+  .slide-photo img,.slide-photo video{position:absolute;inset:0;right:auto;width:100%;height:100%;object-fit:cover;animation:none}
   .slide-photo>i{background:linear-gradient(0deg,var(--bg) 0 6%,transparent 55%)}
   .slide-photo small{left:16px;right:auto;bottom:10px}
 
