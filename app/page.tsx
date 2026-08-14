@@ -8,7 +8,7 @@ import { answer, type Source } from "./lib/demoEngine";
 import "./presentation.css";
 
 type Speaker = "SABRINA" | "KALEB" | "REBEKAH" | "MILA" | "MAX";
-type Visual = "roster" | "slop" | "promise" | "environment" | "district" | "privacy" | "team" | "close";
+type Visual = "slop" | "promise" | "environment" | "district" | "privacy" | "team" | "close";
 type Slide = { speaker:Speaker; chapter:string; title:React.ReactNode; body:React.ReactNode; script:string; seconds:number; visual:Visual; tone:"ink"|"acid"|"paper"|"photo"|"water"; photo:string; credit:string };
 
 const team = [
@@ -21,49 +21,43 @@ const team = [
 
 const slides: Slide[] = [
   {
-    speaker:"SABRINA", chapter:"TEAM VEGA", title:<>Not for everyone.<br/><em>Built for us.</em></>,
-    body:<><p>Five students. Five different skills. One shared problem: AI is everywhere in education, and almost none of it was designed for our schools or our community.</p><strong>So we designed something that was.</strong></>,
-    script:"Good morning. We are Team VEGA: Sabrina, Kaleb, Rebekah, Mila, and Max. We are five students with different skills, but we kept noticing the same problem. AI is everywhere in education, yet almost none of it was designed specifically for our schools or our community. So we designed something that was.",
-    seconds:30, visual:"roster", tone:"ink", photo:"/team-classroom.jpg", credit:"CCSD classroom · The Nevada Independent"
-  },
-  {
     speaker:"SABRINA", chapter:"AI SLOP", title:<>Ten seconds.<br/><em>Infinite slop.</em></>,
-    body:<><strong>No audience.</strong><strong>No purpose.</strong><strong>The same voice.</strong><p>AI made for everyone starts to sound like no one — and school is not immune.</p></>,
+    body:<><strong>No audience.</strong><strong>No purpose.</strong><strong>The same voice.</strong><p>AI made for everyone starts to sound like no one, and school is not immune.</p></>,
     script:"If you were to pull out your phone right now and scroll on Instagram for ten seconds, it is almost guaranteed that you would come across AI slop. Maybe it is a fake story, a six-fingered person, or that same robotic voice reading a video. It was generated for everyone, which means it was really made for no one. The same problem appears when we use AI for school. We receive generic answers, questionable information, and writing that makes every student sound exactly the same. AI is getting more powerful. But is it actually getting better for us? That question led us to VEGA.",
     seconds:35, visual:"slop", tone:"photo", photo:"/phone-scroll.jpg", credit:"Late-night scrolling · Pexels"
   },
   {
-    speaker:"SABRINA", chapter:"MEET VEGA", title:<>Do not tell them.<br/><em>Show them.</em></>,
-    body:<><p>Our prototype for an AI platform designed specifically for CCSD — not to serve everyone on Earth, but our students, teachers, and community.</p><strong className="prototype-proofline">ASK IT SOMETHING. THIS BOX ACTUALLY RUNS.</strong></>,
+    speaker:"SABRINA", chapter:"MEET VEGA", title:<>Ask VEGA<br/><em>something real.</em></>,
+    body:<><p>Our prototype for an AI platform designed specifically for CCSD, built for our students, teachers, and community instead of everyone on Earth.</p><strong className="prototype-proofline">ASK IT SOMETHING. THIS BOX ACTUALLY RUNS.</strong></>,
     script:"VEGA is our prototype for an AI platform designed specifically for CCSD. It is not trying to serve every person on Earth. It is designed to serve our students, our teachers, and our community. Let us show you what that means. Imagine that I missed part of a math lesson. I can ask: can you explain this without just giving me the answer? VEGA guides me through the problem, adjusts the explanation to my level, and shows the trusted sources behind its response. It can help a teacher develop an activity. It can help a student understand an assignment. It can support your writing without replacing your voice. And unlike a general chatbot, VEGA is built around three specific priorities: our environment, our district, and our privacy. Kaleb will start with the environment.",
     seconds:50, visual:"promise", tone:"photo", photo:"/server-rack.jpg", credit:"District server infrastructure · Unsplash"
   },
   {
-    speaker:"KALEB", chapter:"BUILT FOR LAS VEGAS", title:<>Air, not<br/><em>evaporation.</em></>,
+    speaker:"KALEB", chapter:"BUILT FOR LAS VEGAS", title:<>Our servers run<br/><em>on air, not water.</em></>,
     body:<><p>A smaller local system designed for one district, not a hyperscale facility built for the world.</p><strong>Water is not unlimited here. Our hardware choice should reflect that.</strong><span className="honesty">AIR-COOLED · NO ONSITE EVAPORATIVE WATER USE</span></>,
     script:"We live in a desert, so when we hear that AI can consume water for cooling, we should be concerned. These images show how dramatically Lake Mead has changed. Water is not an unlimited resource here. That is why our proposal uses smaller, air-cooled servers located within the district. Fans remove heat from the equipment, so the system would not consume water through evaporative cooling at the site. VEGA will still require electricity. We are not pretending technology has no environmental cost. The difference is scale. VEGA would not be a massive data center serving the entire world. It would be a focused system sized for one school district. We designed the infrastructure around the place where it would actually operate. Now Rebekah will show what that infrastructure could make possible.",
     seconds:40, visual:"environment", tone:"water", photo:"/desert-mesa.jpg", credit:"Nevada desert · Unsplash"
   },
   {
-    speaker:"REBEKAH", chapter:"CONNECTING CCSD", title:<>Share once.<br/><em>Lift every school.</em></>,
+    speaker:"REBEKAH", chapter:"CONNECTING CCSD", title:<>One resource,<br/><em>shared across every school.</em></>,
     body:<><p>Approved lessons, activities, and sources available across CCSD.</p><strong>Teachers keep their judgment. VEGA gives every school a trusted starting point.</strong><span className="evidence-line">ONE TRUSTED RESOURCE LAYER · EVERY SCHOOL · EVERY DEVICE</span></>,
     script:"CCSD has hundreds of schools and thousands of educators, but teachers often have to solve the same problems separately. One teacher creates a lesson from scratch while another teacher across the district may have already created exactly what they need. VEGA could provide a district-controlled space where educators find approved resources, adapt them for their students, and share their own work. It would not tell every teacher to teach in exactly the same way. It would give them a better starting point. That saves time, encourages collaboration, and gives students at different schools access to more consistent support. A shared system also lets CCSD establish shared protections. Mila will explain why that matters.",
     seconds:40, visual:"district", tone:"ink", photo:"/network-panel.jpg", credit:"District network infrastructure · Unsplash"
   },
   {
-    speaker:"MILA", chapter:"PRIVACY YOU CAN SEE", title:<>Your prompt.<br/><em>Still yours.</em></>,
+    speaker:"MILA", chapter:"PRIVACY YOU CAN SEE", title:<>Your question<br/><em>never leaves the district.</em></>,
     body:<><strong>DISTRICT-CONTROLLED INFRASTRUCTURE</strong><strong>NOT COMMERCIAL TRAINING DATA</strong><strong>SOURCES SHOWN BESIDE ANSWERS</strong><p>Important answers remain visible, sourced, and checkable.</p><span className="evidence-line">VISIBLE PRIVACY CHECK · VISIBLE SOURCES · VISIBLE LIMITS</span></>,
     script:"When you enter information into an online AI platform, your request may leave the district and travel through systems controlled by an outside company. With VEGA, the goal is different. The request travels to district-controlled infrastructure and stops there. Student conversations would not be sold to advertisers or used to train a commercial model. CCSD would control access and establish protections designed for its own students. We also designed the prototype to show sources beside its answers. VEGA could still make mistakes. Every AI can. The difference is that students and teachers can see where an answer came from and check it for themselves. We are not asking anyone to blindly trust AI. We are designing AI that can be questioned.",
     seconds:40, visual:"privacy", tone:"photo", photo:"/circuit-board.jpg", credit:"Local processing hardware · Unsplash"
   },
   {
-    speaker:"MAX", chapter:"OUR DRIVING QUESTION", title:<>Five strengths.<br/><em>One opportunity.</em></>,
+    speaker:"MAX", chapter:"OUR DRIVING QUESTION", title:<>We each brought<br/><em>something different.</em></>,
     body:<><span className="driving-question">How can our team use our individual strengths and experiences to create future opportunities?</span><strong className="direct-answer">This project is our answer. None of us could have built it alone.</strong></>,
     script:"Our driving question was: how can our team use our individual strengths and experiences to create future opportunities? This project is our answer. Mila used her programming experience to help give the idea structure. Rebekah researched how VEGA could responsibly support students and teachers. Sabrina turned our research into a message people could understand. Kaleb created the visual identity and helped make VEGA stand out. I used my experience with machine learning and web design to combine those ideas into the prototype you see today. None of us could have built this alone. Our strengths were different, but that was not a weakness. That was the reason the project worked. Together, we turned five individual experiences into one opportunity that none of us could have created separately.",
     seconds:40, visual:"team", tone:"photo", photo:"/students-classroom.jpg", credit:"Valley High School · The Nevada Independent"
   },
   {
-    speaker:"MAX", chapter:"OUR FUTURE", title:<>Stop accepting.<br/><em>Start creating.</em></>,
+    speaker:"MAX", chapter:"OUR FUTURE", title:<>We choose<br/><em>to build.</em></>,
     body:<><p>Start small. Test safety, usefulness, and impact with real students and teachers. Improve before anything scales.</p><strong>OUR AI. OUR SCHOOLS. OUR FUTURE.</strong><div className="try-it-card"><img src="/prototype-qr.svg" alt="QR code linking to the VEGA prototype"/><div><b>TRY VEGA YOURSELF</b><span>vega.doubinemail.workers.dev/prototype</span></div></div></>,
     script:"VEGA is a prototype. It is not finished, and it is not currently an official CCSD system. But it proves something important. Students do not have to wait for somebody else to decide what the future of education should look like. We can help design it. The next step would be a small pilot using district-controlled hardware, trusted educational sources, and feedback from actual students and teachers. Then we measure it. Is it useful? Is it safe? Does it save teachers time? Does it help students learn? If the answer is no, we improve it. If the answer is yes, we have created something that could reach far beyond the five people standing here. AI is already entering our schools. The real question is whether we simply accept whatever arrives, or help build something that answers to our community. We choose to build. This is VEGA. Our AI. Our schools. Our future. Thank you. We are ready for your questions.",
     seconds:40, visual:"close", tone:"photo", photo:"/vegas-skyline.jpg", credit:"Las Vegas · Tom Podmore / Unsplash"
@@ -91,13 +85,6 @@ function TeamSpotlight(){
   </div>
 }
 
-function TeamRoster(){
-  return <div className="team-roster">
-    <div className="team-roster-mark"><VegaMark large/><p>Five different strengths, one shared answer to a problem general AI never solved.</p></div>
-    <ol>{team.map((member,index)=><li key={member.name}><i>0{index+1}</i><b>{member.name}</b><span>{member.strength}</span></li>)}</ol>
-  </div>
-}
-
 function DistrictDemo(){
   const steps=["A teacher searches the shared library","VEGA finds an approved CCSD resource","The teacher adapts it for this class","The improved activity returns to the district"];
   return <div className="visual-stack"><div className="district-demo"><header><AppGlyph/><b>VEGA RESOURCE EXCHANGE</b><span>CCSD NETWORK</span></header><div className="district-search"><span>⌕</span><p>slope exit ticket for Algebra I</p><i>SEARCH</i></div><div className="district-result"><small>APPROVED RESOURCE</small><b>Graphing Linear Relationships</b><p>Exit ticket · 5 questions · Accessible format</p><div><span>South CTA</span><span>CCSD REVIEWED</span></div></div><div className="district-flow"><span>FIND</span><i>→</i><span>ADAPT</span><i>→</i><span>SHARE</span></div><footer><b>327 SCHOOLS</b><span>ONE TRUSTED STARTING POINT</span></footer></div><TimedCaption steps={steps} pace={2100}/></div>
@@ -114,27 +101,36 @@ function EnvironmentEvidence(){return <div className="environment-evidence">
     <figure><img src="/lake-mead-2022.jpg" alt="Satellite image of Lake Mead in July 2022, dramatically lower"/><figcaption>JULY 2022</figcaption></figure>
     <span>THE STAKES ARE LOCAL · NASA LANDSAT</span>
   </div>
-  <article><span>VEGA HARDWARE CHOICE</span><h3>Air cooled.</h3><div className="fan-lines">{[0,1,2].map(i=><i key={i}/>)}</div><p>Fans carry heat away from district hardware. No onsite water is consumed through evaporation.</p><strong><b>0</b> GALLONS OF ONSITE EVAPORATIVE WATER</strong></article>
+  <div className="air-cooled-strip"><b>0</b><div><strong>Air cooled, not evaporated.</strong><p>Fans carry heat away from district hardware, so no onsite water is lost to evaporation.</p></div></div>
 </div>}
 
-function SlopCollage(){
-  const posts=[
-    {image:"/slop-catarrest.jpg",tag:"BREAKING",headline:"Muscular cat arrested at mansion",meta:"9.1M views · no source"},
-    {image:"/slop-strawberry.jpg",tag:"MUST WATCH",headline:"Strawberry and tomato “so excited”",meta:"same voice · same caption"},
-    {image:"/slop-dino.jpg",tag:"FOR KIDS",headline:"Dinosaur screams at crying toddler",meta:"autoplays next · zero context"},
-  ];
-  return <div className="slop-collage" aria-label="A humorous collage showing the repetitive patterns of AI slop">
-    {posts.map((post,index)=><article key={post.headline} style={{"--turn":`${(index-1)*2.4}deg`} as React.CSSProperties}><img src={post.image} alt=""/><div><span>{post.tag}</span><b>{post.headline}</b><small>{post.meta}</small></div></article>)}
+const slopPosts = [
+  {image:"/slop-catarrest.jpg",tag:"BREAKING",headline:"Muscular cat arrested at mansion",meta:"9.1M views · no source"},
+  {image:"/slop-strawberry.jpg",tag:"MUST WATCH",headline:"Strawberry and tomato “so excited”",meta:"same voice · same caption"},
+  {image:"/slop-dino.jpg",tag:"FOR KIDS",headline:"Dinosaur screams at crying toddler",meta:"autoplays next · zero context"},
+  {image:"/slop-cat-astro.jpg",tag:"VIRAL",headline:"Cat becomes NASA's newest recruit",meta:"4.7M views · fully fabricated"},
+  {image:"/slop-fantasy.jpg",tag:"DISCOVER",headline:"Scientists find planet with talking rivers",meta:"zero scientists, zero planet"},
+  {image:"/slop-earthhug.jpg",tag:"INSPIRING",headline:"Woman saves planet with one hug",meta:"same stock caption, every feed"},
+  {image:"/slop-dog-astro.jpg",tag:"BREAKING",headline:"Good boy promoted to mission commander",meta:"12M views, not NASA"},
+];
+
+function SlopBook(){
+  const [index,setIndex]=useState(0);
+  useEffect(()=>{const id=window.setInterval(()=>setIndex(value=>(value+1)%slopPosts.length),5000);return()=>window.clearInterval(id)},[]);
+  const post=slopPosts[index];
+  return <div className="slop-book" aria-label="A flipping feed of AI slop examples, five seconds each">
+    <article key={post.headline}><img src={post.image} alt=""/><i/><div><span>{post.tag}</span><b>{post.headline}</b><small>{post.meta}</small></div></article>
+    <div className="slop-book-dots">{slopPosts.map((item,i)=><i key={item.headline} className={i===index?"active":""}/>)}</div>
     <strong>THE FEED NEVER RUNS OUT.<br/><em>THE IDEAS ALREADY DID.</em></strong>
   </div>
 }
 
-function SlopeGraph(){
+function SlopeGraph({revealed}:{revealed:boolean}){
   const pad=30,w=260,h=210,xMax=6,yMax=9;
   const toX=(x:number)=>pad+(x/xMax)*(w-pad*1.4);
   const toY=(y:number)=>h-pad-(y/yMax)*(h-pad*1.5);
   const a={x:1,y:2},b={x:4,y:8};
-  return <svg className="slope-graph" viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Graph of a line through the points 1, 2 and 4, 8 with a slope of 2">
+  return <svg className={`slope-graph${revealed?" revealed":""}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Graph of a line through the points 1, 2 and 4, 8 with a slope of 2">
     <g className="grid">{Array.from({length:xMax+1}).map((_,i)=><line key={`v${i}`} x1={toX(i)} x2={toX(i)} y1={toY(0)} y2={toY(yMax)}/>)}{Array.from({length:4}).map((_,i)=>{const y=i*3;return <line key={`h${i}`} x1={toX(0)} x2={toX(xMax)} y1={toY(y)} y2={toY(y)}/>})}</g>
     <line className="axis" x1={toX(0)} x2={toX(xMax)} y1={toY(0)} y2={toY(0)}/>
     <line className="axis" x1={toX(0)} x2={toX(0)} y1={toY(0)} y2={toY(yMax)}/>
@@ -149,67 +145,133 @@ function SlopeGraph(){
   </svg>
 }
 
+function TypedText({text,onDone}:{text:string;onDone?:()=>void}){
+  const [count,setCount]=useState(0);
+  const doneRef=useRef(onDone);
+  doneRef.current=onDone;
+  useEffect(()=>{
+    setCount(0);
+    const perTick=Math.max(1,Math.round(text.length/58));
+    const id=window.setInterval(()=>{
+      setCount(value=>{
+        const next=Math.min(text.length,value+perTick);
+        if(next>=text.length){window.clearInterval(id);window.setTimeout(()=>doneRef.current?.(),320)}
+        return next;
+      });
+    },26);
+    return()=>window.clearInterval(id);
+  },[text]);
+  return <>{text.slice(0,count)}<i className="type-caret"/></>;
+}
+
 type DemoMsg = { id:number; who:"user"|"vega"; text:string; sources?:Source[] };
+type DemoStage = "idle"|"intro-q"|"intro-thinking"|"intro-a"|"intro-graph"|"ready";
 const demoStarters = ["Tutor me on slope","Help me improve a thesis","Where are my grades?"];
+const introQuestion = "Can you explain this without just giving me the answer?";
+const introAnswer = "Let's keep the thinking yours. Slope measures how much y changes for each 1-unit change in x. On the graph, x moves from 1 to 4 while y moves from 2 to 8, so that's a run of 3 and a rise of 6. Divide rise by run and tell me what you get.";
 
 function LiveDemo(){
-  const [messages,setMessages]=useState<DemoMsg[]>([
-    {id:1,who:"user",text:"Can you explain this without just giving me the answer?"},
-    {id:2,who:"vega",text:"Let's keep the thinking yours. Slope measures how much y changes for each 1-unit change in x. On the graph, x moves from 1 to 4 while y moves from 2 to 8 — that's a run of 3 and a rise of 6. Divide rise by run and tell me what you get."},
-  ]);
+  const [stage,setStage]=useState<DemoStage>("idle");
+  const [messages,setMessages]=useState<DemoMsg[]>([]);
+  const [typingId,setTypingId]=useState<number|null>(null);
   const [input,setInput]=useState("");
   const [busy,setBusy]=useState(false);
   const [engine,setEngine]=useState<"checking"|"live"|"demo">("checking");
   const endRef=useRef<HTMLDivElement>(null);
-  const idRef=useRef(2);
+  const idRef=useRef(0);
 
   useEffect(()=>{fetch("/api/chat").then(r=>r.json()).then(data=>setEngine(data.connected?"live":"demo")).catch(()=>setEngine("demo"))},[]);
-  useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth",block:"end"})},[messages,busy]);
+  useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth",block:"end"})},[messages,busy,stage]);
+
+  // Stage the built-in example so it plays out like a real exchange: type the
+  // question, pause to "think," type the answer, then draw the graph.
+  useEffect(()=>{
+    if(stage==="idle"){
+      const id=window.setTimeout(()=>{
+        const questionId=idRef.current+=1;
+        setMessages([{id:questionId,who:"user",text:introQuestion}]);
+        setTypingId(questionId);
+        setStage("intro-q");
+      },600);
+      return()=>window.clearTimeout(id);
+    }
+    if(stage==="intro-thinking"){
+      const id=window.setTimeout(()=>{
+        const answerId=idRef.current+=1;
+        setMessages(list=>[...list,{id:answerId,who:"vega",text:introAnswer}]);
+        setTypingId(answerId);
+        setStage("intro-a");
+      },900);
+      return()=>window.clearTimeout(id);
+    }
+    if(stage==="intro-graph"){
+      const id=window.setTimeout(()=>setStage("ready"),1300);
+      return()=>window.clearTimeout(id);
+    }
+  },[stage]);
+
+  const handleTyped=useCallback((messageId:number)=>{
+    setTypingId(null);
+    if(messageId===1)setStage("intro-thinking");
+    else if(messageId===2)setStage("intro-graph");
+  },[]);
 
   const ask=useCallback(async(event?:FormEvent,preset?:string)=>{
     event?.preventDefault();
+    if(stage!=="ready")return;
     const text=(preset??input).trim();
     if(!text||busy)return;
-    const userMsg:DemoMsg={id:idRef.current+=1,who:"user",text};
+    const userId=idRef.current+=1;
+    const userMsg:DemoMsg={id:userId,who:"user",text};
     const history=[...messages,userMsg];
     setMessages(history);setInput("");setBusy(true);
     const local=answer(text,"Student","Tutor");
+    let replyText=local.text,liveEngine:"live"|"demo"="demo";
     try{
       const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:"Student",mode:"Tutor",messages:history.map(m=>({who:m.who,text:m.text}))})});
       if(!response.ok)throw new Error("fallback");
       const data=await response.json() as {text?:string};
       if(!data.text)throw new Error("fallback");
-      setMessages(list=>[...list,{id:idRef.current+=1,who:"vega",text:data.text as string,sources:local.sources}]);
-      setEngine("live");
+      replyText=data.text;liveEngine="live";
     }catch{
-      setMessages(list=>[...list,{id:idRef.current+=1,who:"vega",text:local.text,sources:local.sources}]);
-      setEngine("demo");
-    }finally{setBusy(false)}
-  },[busy,input,messages]);
+      liveEngine="demo";
+    }
+    const replyId=idRef.current+=1;
+    setMessages(list=>[...list,{id:replyId,who:"vega",text:replyText,sources:local.sources}]);
+    setTypingId(replyId);
+    setEngine(liveEngine);
+    setBusy(false);
+  },[busy,input,messages,stage]);
+
+  const graphRevealed=stage==="intro-graph"||stage==="ready";
+  const thinking=stage==="intro-thinking"||busy;
+  const locked=stage!=="ready";
 
   return <div className="live-demo" onClick={event=>event.stopPropagation()}>
     <header><span className="demo-brand"><AppGlyph/><b>VEGA</b></span><span className={engine==="live"?"is-live":""}><i/>{engine==="checking"?"CHECKING ENGINE":engine==="live"?"LIVE MODEL CONNECTED":"LOCAL DEMO ENGINE"}</span></header>
     <div className="live-demo-body">
-      <div className="live-demo-graph"><SlopeGraph/><small>Premade example · slope = rise ÷ run = 2</small></div>
+      <div className={`live-demo-graph${graphRevealed?" revealed":""}`}><SlopeGraph revealed={graphRevealed}/><small>Premade example · slope = rise ÷ run = 2</small></div>
       <div className="live-demo-chat">
         <div className="live-demo-messages">
-          {messages.map(message=><article key={message.id} className={message.who}>
-            <i>{message.who==="vega"?"V":"Y"}</i>
-            <div><p>{message.text}</p>{message.sources&&<div className="live-demo-sources">{message.sources.map(source=><a key={source.url} href={source.url} target="_blank" rel="noreferrer" onClick={event=>event.stopPropagation()}>{source.name} ↗</a>)}</div>}</div>
-          </article>)}
-          {busy&&<article className="vega thinking"><i>V</i><div className="thinking-dots"><span/><span/><span/></div></article>}
+          {messages.map(message=>{
+            const isTyping=typingId===message.id;
+            return <article key={message.id} className={message.who}>
+              <i>{message.who==="vega"?"V":"Y"}</i>
+              <div><p>{isTyping?<TypedText text={message.text} onDone={()=>handleTyped(message.id)}/>:message.text}</p>{!isTyping&&message.sources&&<div className="live-demo-sources">{message.sources.map(source=><a key={source.url} href={source.url} target="_blank" rel="noreferrer" onClick={event=>event.stopPropagation()}>{source.name} ↗</a>)}</div>}</div>
+            </article>
+          })}
+          {thinking&&<article className="vega thinking"><i>V</i><div className="thinking-dots"><span/><span/><span/></div></article>}
           <div ref={endRef}/>
         </div>
-        <div className="live-demo-suggest">{demoStarters.map(starter=><button key={starter} type="button" onClick={()=>ask(undefined,starter)} disabled={busy}>{starter}</button>)}</div>
-        <form onSubmit={ask}><input value={input} onChange={event=>setInput(event.target.value)} placeholder="Ask VEGA a real question…" aria-label="Ask VEGA a question"/><button disabled={!input.trim()||busy}>Ask →</button></form>
+        <div className="live-demo-suggest">{demoStarters.map(starter=><button key={starter} type="button" onClick={()=>ask(undefined,starter)} disabled={busy||locked}>{starter}</button>)}</div>
+        <form onSubmit={ask}><input value={input} onChange={event=>setInput(event.target.value)} placeholder={locked?"VEGA is answering the first question…":"Ask VEGA a real question…"} aria-label="Ask VEGA a question" disabled={busy||locked}/><button disabled={!input.trim()||busy||locked}>Ask →</button></form>
       </div>
     </div>
   </div>
 }
 
 function Visual({type}:{type:Visual}){
-  if(type==="roster")return <TeamRoster/>;
-  if(type==="slop")return <div className="visual-stack"><SlopCollage/><TimedCaption steps={["The feed rewards speed","The same patterns repeat","Your voice disappears"]} pace={1900}/></div>;
+  if(type==="slop")return <div className="visual-stack"><SlopBook/><TimedCaption steps={["The feed rewards speed","The same patterns repeat","Your voice disappears"]} pace={1900}/></div>;
   if(type==="promise")return <LiveDemo/>;
   if(type==="environment")return <div className="visual-stack"><EnvironmentEvidence/><TimedCaption steps={["The local environment defines the requirement","Fans carry heat away from the hardware","No onsite water evaporates"]} pace={2200}/></div>;
   if(type==="district")return <DistrictDemo/>;
